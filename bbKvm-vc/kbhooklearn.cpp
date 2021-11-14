@@ -27,6 +27,7 @@ HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			wPARAM:
 			The identifier of the keyboard message. This parameter can be one of the following messages: WM_KEYDOWN, WM_KEYUP, WM_SYSKEYDOWN, or WM_SYSKEYUP.
 		*/
+
 		if (wParam == WM_KEYDOWN)
 		{
 			/*
@@ -36,7 +37,7 @@ HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 				We cast our lParam accordingly so we may process the information.
 			*/
 			kbdStruct = *((KBDLLHOOKSTRUCT*)lParam);
-			std::cout << "Key pressed" << std::endl;
+			std::cout << "Key caught by hook." << std::endl;
 			//	vkCode = Virtual Key Code.
 			if (kbdStruct.vkCode == VK_ESCAPE)
 			{
@@ -48,9 +49,15 @@ HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 					MB_ICONINFORMATION);
 			}
 		}
+		
 	}
-
 	return CallNextHookEx(_hook, nCode, wParam, lParam);
+	/*
+		FILTERING INPUT:
+		As it turns out, the best way to stop the input from being processed by any other application, is to return without calling CallNextHookEx().
+		We simply return 1.
+	*/
+	//return 1;
 }
 
 void
@@ -81,8 +88,18 @@ int main()
 		https://stackoverflow.com/questions/7458807/why-must-setwindowshookex-be-used-with-a-windows-message-queue
 		EXTREMELY IMPORTANT:
 		In order for Windows to safely insert the data into your process, it needs to be idle and ready to listen. You do this by calling GetMessage() or PeekMessage(), by having your process insert itself into the message loop, Windows will be able to communicate safely.
+
+		--------
+		BIG realization:
+		The while loops is NOT looping. It blocks the program so that windows may safely communicate with the process.
+
+		Unless we place messages in THIS SPECIFIC THREAD'S MESSAGE QUEUE, the function will not continue.
 	*/
 	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0)) {}
+	while (GetMessage(&msg, NULL, 0, 0)) {
+		std::cout << "msg loop baby: " << msg.message << std::endl;
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
+	}
 
 }
