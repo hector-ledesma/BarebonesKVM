@@ -21,12 +21,14 @@ void main() {
 		std::cout << "WSAStartup successful" << std::endl;
 	}
 
+	//	Resolve Local Address and Port for the server.
+
 	addrinfo hints, *result;
 	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_flags = AI_PASSIVE;
+	hints.ai_family = AF_INET;			// IPv4
+	hints.ai_socktype = SOCK_STREAM;	// Stream Socket
+	hints.ai_protocol = IPPROTO_TCP;	// TCP protocol
+	hints.ai_flags = AI_PASSIVE;		// Caller will user returned socket in a bind() call.
 
 	/*
 		getaddrinfo() seems to do some crazy complex DNS lookup related stuff:
@@ -46,6 +48,7 @@ void main() {
 	if (wsOk != 0)
 	{
 		std::cerr << "getaddrinfo failed: " << wsOk << std::endl;
+		WSACleanup();
 		return;
 	}
 	else
@@ -57,7 +60,36 @@ void main() {
 			<< "\t|--- Protocol: \t" << result->ai_protocol << "\n";
 	}
 
+	//	Beg papa Windows for a Socket file descriptor.
+	SOCKET ListenSocket = INVALID_SOCKET;
+	ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+	if (ListenSocket == INVALID_SOCKET)
+	{
+		std::cerr << "Error requesting our listening socket: " << WSAGetLastError() << std::endl;
+		freeaddrinfo(result);
+		WSACleanup();
+		return;
+	}
+	else {
+		std::cout << "Successfully created Listening Socket." << std::endl;
+	}
+
+	//	Bind our listening socket.
+	wsOk = bind(ListenSocket, result->ai_addr, (int)result->ai_addrlen);
+	if (wsOk == SOCKET_ERROR)
+	{
+		std::cerr << "bind() failed with error: " << WSAGetLastError() << std::endl;
+		freeaddrinfo(result);
+		closesocket(ListenSocket);
+		WSACleanup();
+		return;
+	}
+	else {
+		std::cout << "Successfully bound Listening Socket. Freeing address information." << std::endl;
+		freeaddrinfo(result);
+	}
 
 	//	Clean up WinSock
+	closesocket(ListenSocket);
 	WSACleanup();
 }
