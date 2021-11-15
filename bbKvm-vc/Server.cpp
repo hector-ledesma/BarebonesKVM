@@ -9,7 +9,7 @@
 #define DEFAULT_BUFLEN 512
 
 void
-main() {
+server_main() {
 	//	Initialize WinSock
 	WSADATA wsaData;
 	int wsOk = WSAStartup(MAKEWORD(2, 2), &wsaData);
