@@ -6,8 +6,10 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 #define DEFAULT_PORT "27015"
+#define DEFAULT_BUFLEN 512
 
-void main() {
+void
+main() {
 	//	Initialize WinSock
 	WSADATA wsaData;
 	int wsOk = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -113,15 +115,50 @@ void main() {
 	}
 	else
 	{
-		std::cout << "Successfully accepted a client socket." << std::endl;
+		std::cout << "Successfully accepted a client socket. Closing listening socket." << std::endl;
+		closesocket(ListenSocket);
 	}
+
+	//	Main loop
+
+	char recvbuf[DEFAULT_BUFLEN];
+	int iResult, iSendResult;
+	int recvbuflen = DEFAULT_BUFLEN;
+
+	do {
+
+		iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
+		if (iResult > 0)
+		{
+			std::cout << "Bytes received: " << iResult << std::endl;
+
+			//	For now, just return same message.
+			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
+			if (iSendResult == SOCKET_ERROR) {
+				std::cerr << "Failed to send data: " << WSAGetLastError() << std::endl;
+				closesocket(ClientSocket);
+				WSACleanup();
+				return;
+			}
+			std::cout << "Bytes sent: " << iSendResult << std::endl;
+		}
+		else if (iResult == 0)
+			std::cout << "No Data received. Closing connection..." << std::endl;
+		else
+		{
+			std::cerr << "recv() failed: " << WSAGetLastError() << std::endl;
+			closesocket(ClientSocket);
+			WSACleanup();
+			return;
+		}
+
+	} while (iResult > 0);
 
 	//	Shut down client socket
 	wsOk = shutdown(ClientSocket, SD_SEND);
 	if (wsOk == SOCKET_ERROR)
 	{
 		std::cerr << "shudown() failed: " << WSAGetLastError() << std::endl;
-		closesocket(ListenSocket);
 		closesocket(ClientSocket);
 		WSACleanup();
 		return;
@@ -129,6 +166,5 @@ void main() {
 
 
 	//	Clean up WinSock
-	//closesocket(ListenSocket);
 	WSACleanup();
 }
