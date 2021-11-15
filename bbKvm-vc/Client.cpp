@@ -10,7 +10,11 @@ void client_main() {
 	int wsOk = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (wsOk != 0)
 	{
-		std::cout << "WSAStartup failed: " << wsOk << std::endl;
+		std::cerr << "WSAStartup failed: " << wsOk << std::endl;
+	}
+	else
+	{
+		std::cout << "WSAStartup successful" << std::endl;
 	}
 
 	WSACleanup();
