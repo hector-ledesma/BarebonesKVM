@@ -101,7 +101,34 @@ void main() {
 		std::cout << "Listening socket successfully set to listen." << std::endl;
 	}
 
+	//	Accept a connecting socket.
+	SOCKET ClientSocket = INVALID_SOCKET;
+	ClientSocket = accept(ListenSocket, nullptr, nullptr);
+	if (ClientSocket == INVALID_SOCKET)
+	{
+		std::cerr << "Failed to accept a client socket: " << WSAGetLastError() << std::endl;
+		closesocket(ListenSocket);
+		WSACleanup();
+		return;
+	}
+	else
+	{
+		std::cout << "Successfully accepted a client socket." << std::endl;
+	}
+
+	//	Shut down client socket
+	wsOk = shutdown(ClientSocket, SD_SEND);
+	if (wsOk == SOCKET_ERROR)
+	{
+		std::cerr << "shudown() failed: " << WSAGetLastError() << std::endl;
+		closesocket(ListenSocket);
+		closesocket(ClientSocket);
+		WSACleanup();
+		return;
+	}
+
+
 	//	Clean up WinSock
-	 closesocket(ListenSocket);
+	//closesocket(ListenSocket);
 	WSACleanup();
 }
