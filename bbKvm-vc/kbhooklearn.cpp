@@ -79,12 +79,12 @@ ReleaseHook()
 	UnhookWindowsHookEx(_hook);
 }
 
-int main()
+/*int main()
 {
 
 	SetHook(); 
 
-	/*
+	//
 		https://stackoverflow.com/questions/7458807/why-must-setwindowshookex-be-used-with-a-windows-message-queue
 		EXTREMELY IMPORTANT:
 		In order for Windows to safely insert the data into your process, it needs to be idle and ready to listen. You do this by calling GetMessage() or PeekMessage(), by having your process insert itself into the message loop, Windows will be able to communicate safely.
@@ -94,7 +94,7 @@ int main()
 		The while loops is NOT looping. It blocks the program so that windows may safely communicate with the process.
 
 		Unless we place messages in THIS SPECIFIC THREAD'S MESSAGE QUEUE, the function will not continue.
-	*/
+	//
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0)) {
 		std::cout << "msg loop baby: " << msg.message << std::endl;
@@ -102,4 +102,4 @@ int main()
 		DispatchMessageW(&msg);
 	}
 
-}
+}*/
