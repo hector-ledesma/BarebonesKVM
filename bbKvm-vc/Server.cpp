@@ -89,7 +89,19 @@ void main() {
 		freeaddrinfo(result);
 	}
 
+	//	Set our bound socket to listen for connections.
+	if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR)
+	{
+		std::cerr << "listen() call failed with error: " << WSAGetLastError() << std::endl;
+		closesocket(ListenSocket);
+		WSACleanup();
+		return;
+	}
+	else {
+		std::cout << "Listening socket successfully set to listen." << std::endl;
+	}
+
 	//	Clean up WinSock
-	closesocket(ListenSocket);
+	 closesocket(ListenSocket);
 	WSACleanup();
 }
