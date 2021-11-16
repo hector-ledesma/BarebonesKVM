@@ -6,6 +6,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 #define DEFAULT_PORT "27015"
+#define DEFAULT_BUFLEN 512
 
 
 void 
@@ -79,12 +80,16 @@ main() {
 
 		If we're down here, we've successfully received at least one addrinfo structure. We also have a connect socket, which we don't have to re-create, as we only specified characteristics for the connection, and not specifics for the server
 	*/
-	// Set our result as invalid for starters. We'll use this as one of our loop arguments.
+	// Set our result as invalid for starters. We'll use this as one of our loop conditions.
 	iResult = INVALID_SOCKET;
 
 	do
 	{
 		//	Attempt to connect to our current address
+		/*
+			TODO:
+			We need to establish some sort of "handshake" between client and server. This way, even if there's another machine with the same port open, we only connect to our program.
+		*/
 		iResult = connect(ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 		if (iResult == SOCKET_ERROR) {
 			std::cerr << "Failed to connect to addr: " << WSAGetLastError() << std::endl;
@@ -92,10 +97,12 @@ main() {
 				If we fail, we want to try with the next address on the list so:
 				|-- set iResult to invalid, so we may check once we exit the loop.
 				|-- move our ptr to the next. We keep our result intact in case we ever need to start over/reference earlier addresses.
+
 			*/
 			iResult = INVALID_SOCKET;
 			ptr = ptr->ai_next;
 		}
+
 
 	} while (iResult == INVALID_SOCKET && ptr != nullptr);
 
@@ -109,9 +116,47 @@ main() {
 		std::cerr << "Failed to find server!. Exiting early." << std::endl;
 		closesocket(ConnectSocket);
 		WSACleanup();
+		return;
 	}
+
+	int recvbuflen = DEFAULT_BUFLEN;
+
+	const char* sendbuf = "this is a test";
+	char recvbuf[DEFAULT_BUFLEN];
+
+	int loopResult;
+
+	loopResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
+	if (loopResult == SOCKET_ERROR) {
+		std::cerr << "Failed initial send: " << WSAGetLastError() << std::endl;
+		closesocket(ConnectSocket);
+		WSACleanup();
+		return;
+	}
+
+	std::cout << "Bytes Sent: " << loopResult << std::endl;
+
+	loopResult = shutdown(ConnectSocket, SD_SEND);
+	if (loopResult == SOCKET_ERROR)
+	{
+		std::cerr << "Shutdown Failed: " << WSAGetLastError() << std::endl;
+		closesocket(ConnectSocket);
+		WSACleanup();
+		return;
+	}
+
+	do {
+		loopResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+		if (loopResult > 0)
+			std::cout << "Bytes received: " << loopResult << std::endl;
+		else if (loopResult == 0)
+			std::cout << "Connection closed." << std::endl;
+		else
+			std::cout << "recv() failed: " << WSAGetLastError() << std::endl;
+	} while (loopResult > 0);
 
 	//	Clean up after we're done
 	freeaddrinfo(result);
+	closesocket(ConnectSocket);
 	WSACleanup();
 }
