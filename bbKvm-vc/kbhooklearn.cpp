@@ -13,6 +13,8 @@ HHOOK				_hook;
 //	https://docs.microsoft.com/en-us/windows/win32/winmsg/hook-structures
 KBDLLHOOKSTRUCT		kbdStruct;
 
+BOOL		simulated = false;
+
 LRESULT
 CALLBACK	//	CALLBACK is not a keyword. It's simply a preprocessor macro that gets replaced with the appropriate calling convention, which as you already noted is __stdcall.
 HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
@@ -27,7 +29,14 @@ HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			wPARAM:
 			The identifier of the keyboard message. This parameter can be one of the following messages: WM_KEYDOWN, WM_KEYUP, WM_SYSKEYDOWN, or WM_SYSKEYUP.
 		*/
-
+		kbdStruct = *((KBDLLHOOKSTRUCT*)lParam);
+		INPUT inputs[1] = {};
+		ZeroMemory(inputs, sizeof(inputs));
+		inputs[0].type = INPUT_KEYBOARD;
+		//inputs[0].ki.wVk = 0x4C;
+		inputs[0].ki.wVk = kbdStruct.vkCode;
+		
+		
 		if (wParam == WM_KEYDOWN)
 		{
 			/*
@@ -36,8 +45,7 @@ HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 				In this case, KBDLLHOOKSTRUCT.
 				We cast our lParam accordingly so we may process the information.
 			*/
-			kbdStruct = *((KBDLLHOOKSTRUCT*)lParam);
-			std::cout << "Key caught by hook." << std::endl;
+			std::cout << "KeyDOWN in hook." << std::endl;
 			//	vkCode = Virtual Key Code.
 			if (kbdStruct.vkCode == VK_ESCAPE)
 			{
@@ -48,7 +56,24 @@ HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 					(LPCWSTR)L"Key pressed",
 					MB_ICONINFORMATION);
 			}
+
 		}
+		else if (wParam == WM_KEYUP)
+		{
+			std::cout << "KeyUP in hook." << std::endl;
+			inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+		}
+		
+		if (simulated)
+		{
+			simulated = false;
+			UINT uSent = SendInput(1, inputs, sizeof(INPUT));
+			if (uSent != ARRAYSIZE(inputs))
+			{
+				std::cerr << "SendInput Failed :" << HRESULT_FROM_WIN32(GetLastError()) << std::endl;
+			}
+		}
+		else simulated = true;
 		
 	}
 	return CallNextHookEx(_hook, nCode, wParam, lParam);
@@ -79,12 +104,13 @@ ReleaseHook()
 	UnhookWindowsHookEx(_hook);
 }
 
-/*int main()
+int 
+main()
 {
 
 	SetHook(); 
 
-	//
+	/*
 		https://stackoverflow.com/questions/7458807/why-must-setwindowshookex-be-used-with-a-windows-message-queue
 		EXTREMELY IMPORTANT:
 		In order for Windows to safely insert the data into your process, it needs to be idle and ready to listen. You do this by calling GetMessage() or PeekMessage(), by having your process insert itself into the message loop, Windows will be able to communicate safely.
@@ -94,12 +120,12 @@ ReleaseHook()
 		The while loops is NOT looping. It blocks the program so that windows may safely communicate with the process.
 
 		Unless we place messages in THIS SPECIFIC THREAD'S MESSAGE QUEUE, the function will not continue.
-	//
+	*/
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0)) {
 		std::cout << "msg loop baby: " << msg.message << std::endl;
 		TranslateMessage(&msg);
 		DispatchMessageW(&msg);
 	}
-
-}*/
+	UnhookWindowsHookEx(_hook);
+}
