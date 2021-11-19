@@ -130,7 +130,9 @@ server_main() {
 		iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
 		if (iResult > 0)
 		{
-			std::cout << "Bytes received: " << iResult << std::endl;
+			std::cout << "\nBytes received: " << iResult << std::endl;
+
+			std::cout << "Client said: " << std::string(recvbuf, 0, iResult) << std::endl;
 
 			//	For now, just return same message.
 			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
@@ -140,7 +142,7 @@ server_main() {
 				WSACleanup();
 				return;
 			}
-			std::cout << "Bytes sent: " << iSendResult << std::endl;
+			std::cout << "\nBytes sent: " << iSendResult << std::endl;
 		}
 		else if (iResult == 0)
 			std::cout << "No Data received. Closing connection..." << std::endl;
@@ -155,7 +157,7 @@ server_main() {
 	} while (iResult > 0);
 
 	//	Shut down client socket
-	wsOk = shutdown(ClientSocket, SD_SEND);
+	wsOk = shutdown(ClientSocket, SD_BOTH);
 	if (wsOk == SOCKET_ERROR)
 	{
 		std::cerr << "shudown() failed: " << WSAGetLastError() << std::endl;
