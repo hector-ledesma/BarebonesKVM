@@ -2,6 +2,7 @@
 #include <WS2tcpip.h>
 #include <stdio.h>
 #include <iostream>
+#include <string>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -9,7 +10,7 @@
 #define DEFAULT_BUFLEN 512
 
 
-void 
+void
 client_main() {
 	WSADATA wsaData;
 	int wsOk = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -23,7 +24,7 @@ client_main() {
 	}
 
 	//	Set up our addrinfo structure to request server information.
-	addrinfo hints, 
+	addrinfo hints,
 		* result;
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_INET;			// MS Docs use AF_UNSPEC, I'm certain I want ot use IPv4 so I'll go with AF_INET.
@@ -72,7 +73,7 @@ client_main() {
 
 	//	Connect to a socket/server
 	/*
-		As it turns out, getaddrinfo() fills our result pointer with a linked list of all addresses that matched our criteria. 
+		As it turns out, getaddrinfo() fills our result pointer with a linked list of all addresses that matched our criteria.
 
 		Therefore, it is up to us to attempt to connect to all those addresses and establish our connection with the correct one.
 
@@ -134,9 +135,9 @@ client_main() {
 		return;
 	}
 
-	std::cout << "Bytes Sent: " << loopResult << std::endl;
+	std::cout << "Bytes Sent for initial test: " << loopResult << std::endl;
 
-	loopResult = shutdown(ConnectSocket, SD_SEND);
+	/*loopResult = shutdown(ConnectSocket, SD_SEND);
 	if (loopResult == SOCKET_ERROR)
 	{
 		std::cerr << "Shutdown Failed: " << WSAGetLastError() << std::endl;
@@ -144,19 +145,45 @@ client_main() {
 		WSACleanup();
 		return;
 	}
+	else {
+		std::cout << "Successfully terminated send for ConnectSocket" << std::endl;
+	}*/
+
+	std::string userInput;
 
 	do {
 		loopResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-		if (loopResult > 0)
-			std::cout << "Bytes received: " << loopResult << std::endl;
+		if (loopResult > 0) {
+			std::cout << "\nBytes received: " << loopResult << std::endl;
+			std::cout << "Server said: " << std::string(recvbuf, 0, loopResult) << std::endl;
+		}
 		else if (loopResult == 0)
 			std::cout << "Connection closed." << std::endl;
 		else
 			std::cout << "recv() failed: " << WSAGetLastError() << std::endl;
+
+		std::cout << ">\t";
+		std::getline(std::cin, userInput);
+
+		if (userInput.size() == 0) break;
+
+		loopResult = send(ConnectSocket, userInput.c_str(), userInput.size() + 1, 0);
+
+
 	} while (loopResult > 0);
 
 	//	Clean up after we're done
-	freeaddrinfo(result);
+	loopResult = shutdown(ConnectSocket, SD_BOTH);
+	if (loopResult == SOCKET_ERROR)
+	{
+		std::cerr << "Shutdown Failed: " << WSAGetLastError() << std::endl;
+		closesocket(ConnectSocket);
+		WSACleanup();
+		return;
+	}
+	else {
+		std::cout << "Successfully terminated send for ConnectSocket" << std::endl;
+	}
 	closesocket(ConnectSocket);
 	WSACleanup();
 }
