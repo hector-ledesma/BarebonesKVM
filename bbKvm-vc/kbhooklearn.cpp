@@ -104,7 +104,7 @@ ReleaseHook()
 	UnhookWindowsHookEx(_hook);
 }
 
-int 
+void
 main()
 {
 
@@ -122,10 +122,13 @@ main()
 		Unless we place messages in THIS SPECIFIC THREAD'S MESSAGE QUEUE, the function will not continue.
 	*/
 	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0)) {
-		std::cout << "msg loop baby: " << msg.message << std::endl;
-		TranslateMessage(&msg);
-		DispatchMessageW(&msg);
+	while (true) {
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+			std::cout << "msg loop baby: " << msg.message << std::endl;
+			TranslateMessage(&msg);
+			DispatchMessageW(&msg);
+		}
 	}
+	
 	UnhookWindowsHookEx(_hook);
 }
