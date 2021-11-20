@@ -1,11 +1,22 @@
 #include "TCPSocketController.h"
 #include "SocketData.h"
 
-
+#include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <iostream>
  
-SocketData::SocketData(TCPSocketController* controller, addrinfo hint) : m_socket(INVALID_SOCKET) {
+SocketData::SocketData() : m_result(nullptr), m_socket(INVALID_SOCKET) {}
+
+//	This class will take care of cleaning up addrinfo and its associated socket.
+SocketData::~SocketData() {
+	if (m_result != nullptr)
+		freeaddrinfo(m_result);
+	
+	closesocket(m_socket);
+}
+
+
+void SocketData::initSocket(TCPSocketController* controller, addrinfo hint) {
 
 	int wsOk = getaddrinfo(NULL, controller->getPort(), &hint, &m_result);
 	if (wsOk != 0)
@@ -21,18 +32,7 @@ SocketData::SocketData(TCPSocketController* controller, addrinfo hint) : m_socke
 			<< "\t|--- SckType: \t" << m_result->ai_socktype << "\n"
 			<< "\t|--- Protocol: \t" << m_result->ai_protocol << "\n";
 	}
-}
 
-//	This class will tak ecare of cleaning up addrinfo and its associated socket.
-SocketData::~SocketData() {
-	if (m_result != nullptr)
-		freeaddrinfo(m_result);
-	
-	closesocket(m_socket);
-}
-
-
-void SocketData::initSocket() {
 	m_socket = socket(m_result->ai_family, m_result->ai_socktype, m_result->ai_protocol);
 	if (m_socket == INVALID_SOCKET)
 	{

@@ -12,10 +12,10 @@ public:
 	TCPSocketController(char* port, char* address);
 	~TCPSocketController();
 
+	SocketData generateSocket(bool isServer);
 	char* getPort() { return m_port; };
 
 protected:
-	SocketData* generateSocket(bool isServer);
 	char*	m_port;
 	char*	m_address;
 };

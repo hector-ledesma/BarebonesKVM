@@ -36,10 +36,10 @@ TCPSocketController::~TCPSocketController() {
 	WSACleanup();
 }
 
-SocketData*
+SocketData
 TCPSocketController::generateSocket(bool isServer) {
 
-	SocketData* socketContainer;
+	SocketData socketContainer;
 	addrinfo hints, * result;
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_INET;			//	IPv4
@@ -51,12 +51,11 @@ TCPSocketController::generateSocket(bool isServer) {
 
 	try
 	{
-		socketContainer = &SocketData(this, hints);
-		socketContainer->initSocket();
+		socketContainer.initSocket(this, hints);
 	}
 	catch (int e)
 	{
-		return nullptr;
+		throw e;
 	}
 	
 	return socketContainer;
