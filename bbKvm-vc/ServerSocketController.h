@@ -1,5 +1,6 @@
 #pragma once
 #include "TCPSocketController.h"
+
 class SocketData;
 class SOCKET;
 

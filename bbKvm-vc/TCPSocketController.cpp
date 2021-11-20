@@ -37,7 +37,7 @@ TCPSocketController::~TCPSocketController() {
 }
 
 SocketData
-TCPSocketController::generateSocket(bool isServer) {
+TCPSocketController::generateSocket(bool isServer = false) {
 
 	SocketData socketContainer;
 	addrinfo hints, * result;
