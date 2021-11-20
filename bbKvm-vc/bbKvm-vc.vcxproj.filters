@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Network">
       <UniqueIdentifier>{6cd1dc1a-4a5d-448d-8117-4bec62a03346}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\net">
+      <UniqueIdentifier>{f8247a67-57d1-4558-a246-c1e9f8265228}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="kbhooklearn.cpp">
@@ -30,5 +33,19 @@
     <ClCompile Include="Client.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
+    <ClCompile Include="TCPSocketController.cpp">
+      <Filter>Source Files\net</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketData.cpp">
+      <Filter>Source Files\net</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TCPSocketController.h">
+      <Filter>Source Files\net</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketData.h">
+      <Filter>Source Files\net</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

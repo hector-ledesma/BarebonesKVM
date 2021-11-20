@@ -142,9 +142,13 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="kbhooklearn.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="SocketData.cpp" />
+    <ClCompile Include="TCPSocketController.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SocketData.h" />
+    <ClInclude Include="TCPSocketController.h" />
     <ClInclude Include="TCPSocketController.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
