@@ -105,7 +105,7 @@ ReleaseHook()
 }
 
 void
-main()
+hook_main()
 {
 
 	SetHook(); 
