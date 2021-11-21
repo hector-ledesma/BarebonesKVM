@@ -34,10 +34,10 @@ TCPSocketController::TCPSocketController(const char* port, const char* address)
 TCPSocketController::~TCPSocketController() {
 	std::cout << "\n[TCPSocketController] ---- Destructor called." << std::endl;
 	
-	std::cout << "\tFreeing addrinfo." << std::endl;
+	std::cout << "\t|----Freeing addrinfo." << std::endl;
 	freeaddrinfo(m_result);
 
-	std::cout << "\Cleaning up WinSock." << std::endl;
+	std::cout << "\t|----Cleaning up WinSock." << std::endl;
 	WSACleanup();
 }
 
