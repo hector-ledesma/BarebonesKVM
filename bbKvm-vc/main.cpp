@@ -6,7 +6,6 @@ int main()
 	try
 	{
 		Server server;
-		server.getClient();
 		server.run();
 	}
 	catch (int err)

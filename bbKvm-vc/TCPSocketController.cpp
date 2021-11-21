@@ -10,8 +10,11 @@
 	No WinSock means no networking, which means no program.
 	So, initialize WinSock on constructor, and just exit if it fails.
 */
-TCPSocketController::TCPSocketController(const char* port, const char* address) 
-	: m_port(port), m_address(address) {
+TCPSocketController::TCPSocketController(const char* port, const char* address)
+	: m_port(port),
+	m_address(address),
+	m_result(nullptr)
+{
 	std::cout << "\n[TCPSocketController] ---- Constructor called." << std::endl;
 	try {
 		WSADATA wsaData;
@@ -28,8 +31,9 @@ TCPSocketController::TCPSocketController(const char* port, const char* address)
 }
 
 /*
-	Clean up WinSock.
-	We'll handle cleaning addrinfo objects, as well as the sockets, in a separate container class.
+	Clean up WinSock and our addrinfo pointer.
+
+	We can also free up our addrinfo and set the pointer to nullptr once we have a socket successfully in a listening state.
 */
 TCPSocketController::~TCPSocketController() {
 	std::cout << "\n[TCPSocketController] ---- Destructor called." << std::endl;
@@ -51,7 +55,6 @@ SOCKET
 TCPSocketController::generateSocket(bool isServer) {
 	std::cout << "\n[TCPSocketController] ---- Generating socket." << std::endl;
 
-	//SocketData socketContainer;
 	SOCKET workSocket;
 	addrinfo hints, * result;
 	ZeroMemory(&hints, sizeof(hints));
@@ -82,19 +85,9 @@ TCPSocketController::generateSocket(bool isServer) {
 		std::cerr << "\n[TCPSocketController] ---- Error generating socket: " << WSAGetLastError() << std::endl;
 		throw - 1;
 	}
-
-	/*try
-	{
-		socketContainer.initSocket(getPort(), hints);
-	}
-	catch (int e)
-	{
-		throw e;
-	}*/
 	
 	std::cout << "\n[TCPSocketController] ---- Successfully created Socket Data:" << std::endl;
 	std::cout << "\t |---- Socket address:" << workSocket << std::endl;
 
-	//return socketContainer;
 	return workSocket;
 }

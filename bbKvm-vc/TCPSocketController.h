@@ -3,6 +3,11 @@
 
 class SocketData;
 
+/*
+	Generating a socket is a pretty universal procedure, outside of the passive flag.
+
+	This class can be subclassed to generate server or client specific ports/functionality.
+*/
 class TCPSocketController
 {
 public:
@@ -20,5 +25,9 @@ public:
 protected:
 	const char*	m_port;
 	const char*	m_address;
+	/*
+		Creating and using a socket relies on information from our addrinfo.
+		We store it in our controller so that it may be used by any instance and/or children of this class.
+	*/
 	addrinfo*	m_result;
 };
