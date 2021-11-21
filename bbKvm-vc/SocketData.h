@@ -1,6 +1,5 @@
 #pragma once
-class SOCKET;
-class addrinfo;
+#include <WinSock2.h>
 
 class SocketData {
 public:
@@ -8,7 +7,7 @@ public:
 	~SocketData();
 
 	//SOCKET socket();
-	void initSocket(TCPSocketController* controller, addrinfo hint);
+	void initSocket(const char* port, addrinfo hint);
 
 	addrinfo* getAddr() { return m_result; };
 	SOCKET getSocket() { return m_socket; };

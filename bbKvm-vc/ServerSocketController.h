@@ -1,13 +1,12 @@
 #pragma once
+#include <WinSock2.h>
 #include "TCPSocketController.h"
 
-class SocketData;
-class SOCKET;
 
 class ServerSocketController :	public TCPSocketController
 {
 public:
-	ServerSocketController(char* port, char* address) : TCPSocketController(port, address) {};
+	ServerSocketController(const char* port, const char* address);
 
 	SOCKET initListenSocket();
 };

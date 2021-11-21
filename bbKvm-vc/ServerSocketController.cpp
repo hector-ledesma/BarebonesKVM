@@ -1,10 +1,9 @@
 #include "ServerSocketController.h"
 #include "SocketData.h"
-
-#include <WinSock2.h>
-#include <WS2tcpip.h>
 #include <iostream>
 
+
+ServerSocketController::ServerSocketController(const char* port, const char* address) : TCPSocketController(port, address) {};
 
 SOCKET ServerSocketController::initListenSocket() {
 

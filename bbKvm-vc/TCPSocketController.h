@@ -1,15 +1,11 @@
 #pragma once
-class addrinfo;
-class SOCKET;
-class SocketData;
 
-//	Define the buffer size that will be used by the classes that will subclass this one.
-#define DEFAULT_BUFLEN 4096
+class SocketData;
 
 class TCPSocketController
 {
 public:
-	TCPSocketController(char* port, char* address);
+	TCPSocketController( const char* port, const char* address);
 	~TCPSocketController();
 
 	/*
@@ -18,9 +14,9 @@ public:
 		Default value = false.
 	*/
 	SocketData generateSocket(bool isServer = false);
-	char* getPort() { return m_port; };
+	const char* getPort();
 
 protected:
-	char*	m_port;
-	char*	m_address;
+	const char*	m_port;
+	const char*	m_address;
 };

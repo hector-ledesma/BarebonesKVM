@@ -1,19 +1,19 @@
 #include "TCPSocketController.h"
-#include <WS2tcpip.h>
-#include <WinSock2.h>
-#include <iostream>
-#include <string>
 #include "SocketData.h"
 
-#pragma comment(lib, "Ws2_32.lib")
+#include <iostream>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 
+#pragma comment(lib, "Ws2_32.lib")
 
 /*
 	No WinSock means no networking, which means no program.
 	So, initialize WinSock on constructor, and just exit if it fails.
 */
-TCPSocketController::TCPSocketController(char* port, char* address) 
+TCPSocketController::TCPSocketController(const char* port, const char* address) 
 	: m_port(port), m_address(address) {
+	std::cout << "\n[TCPSocketController] ---- Constructor called." << std::endl;
 	try {
 		WSADATA wsaData;
 		int wsOk = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -22,10 +22,10 @@ TCPSocketController::TCPSocketController(char* port, char* address)
 	}
 	catch (int e)
 	{
-		std::cerr << "WSAStartup failed: " << e << std::endl;
+		std::cerr << "\n[TCPSocketController] ---- WSAStartup failed: " << e << std::endl;
 	}
 
-	std::cout << "WSAStartup successful" << std::endl;
+	std::cout << "\n[TCPSocketController] ---- WSAStartup successful" << std::endl;
 }
 
 /*
@@ -33,11 +33,20 @@ TCPSocketController::TCPSocketController(char* port, char* address)
 	We'll handle cleaning addrinfo objects, as well as the sockets, in a separate container class.
 */
 TCPSocketController::~TCPSocketController() {
+	std::cout << "\n[TCPSocketController] ---- Destructor called. Cleaning up WSA." << std::endl;
+
 	WSACleanup();
 }
 
+const char*
+TCPSocketController::getPort()
+{
+	return m_port;
+}
+
 SocketData
-TCPSocketController::generateSocket(bool isServer = false) {
+TCPSocketController::generateSocket(bool isServer) {
+	std::cout << "\n[TCPSocketController] ---- Generating socket." << std::endl;
 
 	SocketData socketContainer;
 	addrinfo hints, * result;
@@ -51,12 +60,16 @@ TCPSocketController::generateSocket(bool isServer = false) {
 
 	try
 	{
-		socketContainer.initSocket(this, hints);
+		socketContainer.initSocket(getPort(), hints);
 	}
 	catch (int e)
 	{
 		throw e;
 	}
 	
+	std::cout << "\n[TCPSocketController] ---- Generated Socket Data:" << std::endl;
+	std::cout << "\t |---- Socket address:" << socketContainer.getAddr() << std::endl;
+	std::cout << "\t |---- Socket socket:" << socketContainer.getSocket() << std::endl;
+
 	return socketContainer;
 }

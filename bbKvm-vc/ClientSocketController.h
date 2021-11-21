@@ -1,8 +1,6 @@
 #pragma once
 #include "TCPSocketController.h"
-
-class SocketData;
-class SOCKET;
+#include <WinSock2.h>
 
 class ClientSocketController :	public TCPSocketController
 {

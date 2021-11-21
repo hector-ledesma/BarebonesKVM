@@ -19,6 +19,9 @@
     <Filter Include="Source Files\learning">
       <UniqueIdentifier>{3238bcad-62c5-4b6a-abd2-710806922f77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\server">
+      <UniqueIdentifier>{13780868-0b43-48f4-8463-90d6b422dce4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">
@@ -45,6 +48,12 @@
     <ClCompile Include="kbhooklearn.cpp">
       <Filter>Source Files\learning</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCPSocketController.h">
@@ -61,6 +70,12 @@
     </ClInclude>
     <ClInclude Include="ClientSocketController.h">
       <Filter>Source Files\net</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPSocketController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Source Files\server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
