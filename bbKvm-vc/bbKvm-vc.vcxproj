@@ -141,20 +141,20 @@
   <ItemGroup>
     <ClCompile Include="clientlearn.cpp" />
     <ClCompile Include="ClientSocketController.cpp" />
+    <ClCompile Include="HooksHandler.cpp" />
     <ClCompile Include="kbhooklearn.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="serverlearn.cpp" />
     <ClCompile Include="ServerSocketController.cpp" />
-    <ClCompile Include="SocketData.cpp" />
     <ClCompile Include="TCPSocketController.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientSocketController.h" />
+    <ClInclude Include="HooksHandler.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerSocketController.h" />
-    <ClInclude Include="SocketData.h" />
     <ClInclude Include="TCPSocketController.h" />
     <ClInclude Include="TCPSocketController.h" />
   </ItemGroup>

@@ -20,10 +20,13 @@ public:
 	//	Main network/server loop.
 	void run();
 
+	
+
+private:
+
 	//	Used for validation.
 	bool haveClient();
 
-private:
 	/*
 		This function will only look for, and store a single socket connection.
 
@@ -50,5 +53,7 @@ private:
 		If we wanted to handle multiple clients, we could create some form of class/way to identify sockets for each connection, and store the sockets in a container/list.
 	*/
 	SOCKET					m_client;
+
+	
 };
 
