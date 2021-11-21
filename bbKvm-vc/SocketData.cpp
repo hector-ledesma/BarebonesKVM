@@ -43,8 +43,8 @@ void SocketData::initSocket(const char* port, addrinfo hint) {
 	m_socket = socket(m_result->ai_family, m_result->ai_socktype, m_result->ai_protocol);
 	if (m_socket == INVALID_SOCKET)
 	{
-		std::cerr << "Error generating socket: " << WSAGetLastError() << std::endl;
+		std::cerr << "\n[SocketData] ---- Error generating socket: " << WSAGetLastError() << std::endl;
 		throw - 1;
 	}
-	std::cout << "Successfully created initialized Socket through SocketData." << std::endl;
+	std::cout << "\n[SocketData] ---- Successfully created initialized Socket through SocketData." << std::endl;
 }

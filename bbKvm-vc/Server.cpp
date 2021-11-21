@@ -4,10 +4,14 @@
 Server::Server() 
 	:	m_controller(ServerSocketController(DEFAULT_PORT, DEFAULT_HOST)), 
 		m_client(m_controller.initListenSocket()) 
-{};
+{
+	std::cout << "\n[Server] ---- Constructor called." << std::endl;
+
+};
 
 Server::~Server() 
 {
+	std::cout << "\n[Server] ---- Destructor called." << std::endl;
 	closesocket(m_listener);
 	closesocket(m_client);
 }
@@ -15,13 +19,13 @@ Server::~Server()
 void 
 Server::getClient()
 {
-	std::cout << "\nWaiting for Client..." << std::endl;
+	std::cout << "\n[Server] ---- Waiting for Client..." << std::endl;
 	m_client = accept(m_listener, nullptr, nullptr);
 
 	if (m_client == INVALID_SOCKET)
 	{
 		int err = WSAGetLastError();
-		std::cerr << "Failed to accept a client socket: " << err << std::endl;
+		std::cerr << "\n[Server] ---- Failed to accept a client socket: " << err << std::endl;
 		throw err;
 	}
 }
@@ -29,6 +33,8 @@ Server::getClient()
 void
 Server::run()
 {
+	std::cout << "\n[Server] ---- Running..." << std::endl;
+
 	char recvbuf[DEFAULT_BUFLEN];
 	int iResult, iSendResult;
 	int recvbuflen = DEFAULT_BUFLEN;
@@ -38,25 +44,25 @@ Server::run()
 		iResult = recv(m_client, recvbuf, recvbuflen, 0);
 		if (iResult > 0)
 		{
-			std::cout << "\nBytes received: " << iResult << std::endl;
+			std::cout << "\n[Server] ---- Bytes received: " << iResult << std::endl;
 
-			std::cout << "Client said: " << std::string(recvbuf, 0, iResult) << std::endl;
+			std::cout << "\n[Server] ---- Client said: " << std::string(recvbuf, 0, iResult) << std::endl;
 
 			//	For now, just return same message.
 			iSendResult = send(m_client, recvbuf, iResult, 0);
 			if (iSendResult == SOCKET_ERROR) {
 				err = WSAGetLastError();
-				std::cerr << "Failed to send data: " << err << std::endl;
+				std::cerr << "\n[Server] ---- Failed to send data: " << err << std::endl;
 				throw err;
 			}
-			std::cout << "\nBytes sent: " << iSendResult << std::endl;
+			std::cout << "\n[Server] ---- Bytes sent: " << iSendResult << std::endl;
 		}
 		else if (iResult == 0)
-			std::cout << "No Data received. Closing connection..." << std::endl;
+			std::cout << "\n[Server] ---- No Data received. Closing connection..." << std::endl;
 		else
 		{
 			err = WSAGetLastError();
-			std::cerr << "recv() failed: " << err << std::endl;
+			std::cerr << "\n[Server] ---- recv() failed: " << err << std::endl;
 			throw err;
 		}
 
@@ -66,7 +72,7 @@ Server::run()
 	if (iResult == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();
-		std::cerr << "Failed client shutdown(): " << err << std::endl;
+		std::cerr << "\n[Server] ---- Failed client shutdown(): " << err << std::endl;
 		throw err;
 	}
 }

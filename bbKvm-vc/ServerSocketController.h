@@ -7,6 +7,7 @@ class ServerSocketController :	public TCPSocketController
 {
 public:
 	ServerSocketController(const char* port, const char* address);
+	~ServerSocketController();
 
 	SOCKET initListenSocket();
 };
