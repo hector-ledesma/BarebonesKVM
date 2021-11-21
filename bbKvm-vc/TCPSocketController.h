@@ -1,4 +1,5 @@
 #pragma once
+#include <WinSock2.h>
 
 class SocketData;
 
@@ -13,10 +14,11 @@ public:
 		Set to true if the generated socket will be used in a bind() call.
 		Default value = false.
 	*/
-	SocketData generateSocket(bool isServer = false);
+	SOCKET generateSocket(bool isServer = false);
 	const char* getPort();
 
 protected:
 	const char*	m_port;
 	const char*	m_address;
+	addrinfo*	m_result;
 };

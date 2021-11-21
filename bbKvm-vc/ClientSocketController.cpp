@@ -1,5 +1,4 @@
 #include "ClientSocketController.h"
-#include "SocketData.h"
 
 #include <WinSock2.h>
 #include <iostream>
@@ -7,10 +6,11 @@
 SOCKET 
 ClientSocketController::initServerSocket()
 {
-	SocketData socketContainer = generateSocket();
-	SOCKET serverSocket = socketContainer.getSocket();
-	addrinfo* result = socketContainer.getAddr();
-	addrinfo* ptr = result;
+	//SocketData* socketContainer = generateSocket();
+	SOCKET connectSocket = generateSocket();
+	//SOCKET serverSocket = socketContainer->getSocket();
+	//addrinfo* result = socketContainer->getAddr();
+	addrinfo* ptr = m_result;
 
 	int iResult = INVALID_SOCKET;
 
@@ -21,7 +21,7 @@ ClientSocketController::initServerSocket()
 			TODO:
 			We need to establish some sort of "handshake" between client and server. This way, even if there's another machine with the same port open, we only connect to our program.
 		*/
-		iResult = connect(serverSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		iResult = connect(connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 		if (iResult == SOCKET_ERROR) {
 			std::cerr << "Failed to connect to addr: " << WSAGetLastError() << std::endl;
 			/*
@@ -44,5 +44,5 @@ ClientSocketController::initServerSocket()
 		throw - 1;
 	}
 
-	return serverSocket;
+	return connectSocket;
 }

@@ -2,8 +2,9 @@
 #include <iostream>
 
 Server::Server() 
-	:	m_controller(ServerSocketController(DEFAULT_PORT, DEFAULT_HOST)), 
-		m_client(m_controller.initListenSocket()) 
+	:	m_controller(ServerSocketController(DEFAULT_PORT, DEFAULT_HOST)),
+		m_listener(m_controller.initListenSocket()),
+		m_client(INVALID_SOCKET) 
 {
 	std::cout << "\n[Server] ---- Constructor called." << std::endl;
 
@@ -11,7 +12,7 @@ Server::Server()
 
 Server::~Server() 
 {
-	std::cout << "\n[Server] ---- Destructor called." << std::endl;
+	std::cout << "\n[Server] ---- Destructor called. Closing listening and client sockets." << std::endl;
 	closesocket(m_listener);
 	closesocket(m_client);
 }

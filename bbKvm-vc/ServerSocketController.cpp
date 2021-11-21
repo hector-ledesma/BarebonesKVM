@@ -1,5 +1,4 @@
 #include "ServerSocketController.h"
-#include "SocketData.h"
 #include <iostream>
 
 
@@ -14,16 +13,18 @@ ServerSocketController::~ServerSocketController()
 	std::cout << "\n[ServerSocketController] ---- Destructor called." << std::endl;
 
 }
-SOCKET ServerSocketController::initListenSocket() {
+SOCKET ServerSocketController::initListenSocket() 
+{
 	std::cout << "\n[ServerSocketController] ---- Initializing a Listening Socket." << std::endl;
 
-	SocketData socketContainer = generateSocket(true);
-	addrinfo* result = socketContainer.getAddr();
-	SOCKET listenSocket = socketContainer.getSocket();
+	SOCKET listenSocket = generateSocket(true);
+	std::cout << "\n[ServerSocketController] ---- Storing SocketData information." << std::endl;
+	//addrinfo* result = socketContainer.getAddr();
+	//SOCKET listenSocket = socketContainer.getSocket();
 
 	std::cout << "\n[ServerSocketController] ---- Calling bind()." << std::endl;
 	int iResult;
-	iResult = bind(listenSocket, result->ai_addr, (int)result->ai_addrlen);
+	iResult = bind(listenSocket, m_result->ai_addr, (int)m_result->ai_addrlen);
 	if (iResult == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();

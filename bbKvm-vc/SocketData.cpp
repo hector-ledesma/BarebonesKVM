@@ -5,7 +5,6 @@
 
 SocketData::SocketData() : m_result(nullptr), m_socket(INVALID_SOCKET) {
 	std::cout << "\n[SocketData] ---- Constructor called." << std::endl;
-
 }
 
 //	This class will take care of cleaning up addrinfo and its associated socket.
