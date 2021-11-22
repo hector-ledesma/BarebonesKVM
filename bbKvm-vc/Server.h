@@ -1,6 +1,7 @@
 #pragma once
 #include <WinSock2.h>
 #include "ServerSocketController.h"
+#include "HooksHandler.h"
 
 #define DEFAULT_HOST "localhost"
 #define DEFAULT_PORT "27015"
@@ -54,6 +55,7 @@ private:
 	*/
 	SOCKET					m_client;
 
+	HooksHandler			m_handler;
 	
 };
 

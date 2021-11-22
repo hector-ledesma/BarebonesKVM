@@ -7,9 +7,10 @@ public:
 	HooksHandler();
 	~HooksHandler();
 
-	static HHOOK getKbHook() { return m_kbHook; };
-	void setKbHook();
+	//static HHOOK getKbHook() { return m_kbHook; };
+	void setHooks();
+	//static HHOOK m_kbHook;
 private:
-	static HHOOK m_kbHook;
+	void setKbHook();
 };
 
