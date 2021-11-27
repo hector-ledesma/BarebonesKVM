@@ -3,9 +3,7 @@
 #include <string>
 #include <sstream>
 
-#define		BB_END				(WM_USER + 0)
-#define		SIMULATE_KEYDOWN	(WM_USER + 1)
-#define		SIMULATE_KEYUP		(WM_USER + 2)
+#define		BBKVM_SIMULATEKEY	(WM_USER + 0)
 
 /*
 	The Server constructor will first initialize our controller using our defined port and host in Server.h.
@@ -73,7 +71,7 @@ Server::run()
 	//	TODO: Refactor entire main loop. We'll use message queues as this is a one-way communcation process.
 	char buf[DEFAULT_BUFLEN];
 	int iResult, iSendResult;
-	int buflen = DEFAULT_BUFLEN;
+	int buflen = DEFAULT_BUFLEN; 
 	int err;
 
 	//	Initial handshake
@@ -113,26 +111,24 @@ Server::run()
 	{
 		std::ostringstream ss;
 
-		switch (msg.message)
-		{
-		default:
-			std::cout << "[Server] ---- message found: " << msg.message << std::endl;
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		case SIMULATE_KEYDOWN:
-			ss << "KEYDOWN captured." << "\r\n";
-			break;
-		case SIMULATE_KEYUP:
-			ss << "KEYUP captured." << "\r\n";
-			break;
-		}
+		std::cout << "[Server] ---- message found: " << msg.message << std::endl;
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 		
 		ss << "\t\t|---Message: " << msg.message << "\r\n" <<
 			"\t\t|--wParam: " << msg.wParam << "\r\n"
-			"\t\t|--lParam: " << msg.lParam << "\r\n";
+			"\t\t|--lParam: " << (ULONG)msg.lParam << "\r\n";
 
-		iSendResult = send(m_client, ss.str().c_str(), ss.str().size(), 0);
-		if (iSendResult == SOCKET_ERROR) 
+		std::cout << ss.str() << std::endl;
+
+		if (msg.wParam == 0x41) std::cout << "yee yee" << std::endl;
+
+		std::ostringstream info;
+		info << msg.wParam << "[[" << (ULONG)msg.lParam;
+
+		iSendResult = send(m_client, info.str().c_str(), info.str().size() + 1, 0);
+		//iSendResult = send(m_client, buf, sizeof(KBDLLHOOKSTRUCT), 0);
+		if (iSendResult == SOCKET_ERROR)
 		{
 			err = WSAGetLastError();
 			std::cerr << "\n[Server] ---- Failed to send data: " << err << std::endl;
