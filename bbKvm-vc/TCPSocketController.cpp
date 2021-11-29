@@ -72,11 +72,24 @@ TCPSocketController::generateSocket(bool isServer) {
 	}
 	else
 	{
+		struct sockaddr_in* ipv4 = (struct sockaddr_in*)m_result->ai_addr;
+		char ipstr[INET6_ADDRSTRLEN];
+		inet_ntop(m_result->ai_family, &(ipv4->sin_addr), ipstr, sizeof ipstr);
 		std::cout << "\n[TCPSocketController] ---- LocalHost resolved successfully:\n"
-			<< "\t|---- Address: \t" << m_result->ai_addr << "\n"
+			<< "\t|---- Address: \t" << ipstr << "\n"
 			<< "\t|---- Family: \t" << m_result->ai_family << "\n"
 			<< "\t|---- SckType: \t" << m_result->ai_socktype << "\n"
 			<< "\t|---- Protocol: \t" << m_result->ai_protocol << "\n";
+	}
+
+	// Testing
+	for (addrinfo* p = m_result; p != nullptr; p = p->ai_next)
+	{
+		struct sockaddr_in* ipv4 = (struct sockaddr_in*)m_result->ai_addr;
+		char ipstr[INET6_ADDRSTRLEN];
+		inet_ntop(m_result->ai_family, &(ipv4->sin_addr), ipstr, sizeof ipstr);
+		std::cout << "\n[TCPSocketController] ---- Testing all addresses:\n"
+			<< "\t|----  \t" << ipstr << std::endl;
 	}
 
 	workSocket = socket(m_result->ai_family, m_result->ai_socktype, m_result->ai_protocol);

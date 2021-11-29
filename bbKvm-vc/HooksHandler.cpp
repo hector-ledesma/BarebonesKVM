@@ -31,7 +31,7 @@ HooksHandler::~HooksHandler()
 
 		|---- Extended			->	LLKHF_EXTENDED on KBDLLHOOKSTRUCT and KEYEVENTF_EXTENDEDKEY on INPUT. Indicates if key originated from one of the additional keys on the enhanced keyboard: (right)ALT, (right)CTRL, INS, DEL, HOME, END, PAGE UP, PAGE DOWN, NUM LOCK, arrow keys, BREAK (ctrl + pause), PRINT SCRN, divide(/), ENTER.
 
-		|---- Transition/KeyUp	->	KEYEVENTF_KEYUP on INPUT, determined by our wParam in hook callback, and apparently LLKHF_UP. Indicates whether the key is being pressed or released
+		|---- Transition/KeyUp	->	KEYEVENTF_KEYUP on INPUT and LLKHF_UP on KBDLLHOOKSTRUCT. Indicates whether the key is being pressed or released.
 
 		// TODO //
 		|---- Alt down			->	Indicates whether the ALT key is pressed.
@@ -69,11 +69,8 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			std::cout << "[KeyboardHookCallback] ---- LLKHF_UP in flag = \t\t" << std::bitset<32>(1lu<<31) << std::endl;
 			lParam |= (1lu << 31);				//	transition
 		}
-		//if (id == WM_KEYUP)
-		//	std::cout << "[KeyboardHookCallback] ---- WM_KEYUP in flag = \t" << std::bitset<64>(1lu<<16) << std::endl;
-		//	lParam |= (1lu << 16);				//	key released
 
-		if (kbdStruct->vkCode == VK_ESCAPE)
+		if (wParam == VK_ESCAPE)
 		{
 			std::cout << "\n[KeyboardHookCallback] ---- ESC pressed, terminating program." << std::endl;
 			PostQuitMessage(0);
@@ -89,7 +86,7 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 
 		/*if (id == WM_KEYDOWN)
 		{
-			std::cout << "\n[KeyboardHookCallback] ---- Keydown pressed." << std::endl;
+			std::cout << "\n[KeyboardHookCallback] ---- Keydown pressed." << std::endl;	
 			if (kbdStruct->vkCode == VK_ESCAPE)
 			{
 				std::cout << "\n[KeyboardHookCallback] ---- ESC pressed, terminating program." << std::endl;
@@ -107,6 +104,7 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 
 		}*/
 	}
+	//return 1;
 	return CallNextHookEx(g_kbHook, nCode, wParam, lParam);
 }
 
