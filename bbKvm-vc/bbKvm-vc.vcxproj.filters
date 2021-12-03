@@ -54,6 +54,9 @@
     <ClCompile Include="HooksHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mousehooklearn.cpp">
+      <Filter>Source Files\learning</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCPSocketController.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HooksHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPSocketController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -144,6 +144,7 @@
     <ClCompile Include="HooksHandler.cpp" />
     <ClCompile Include="kbhooklearn.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mousehooklearn.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="serverlearn.cpp" />
     <ClCompile Include="ServerSocketController.cpp" />
