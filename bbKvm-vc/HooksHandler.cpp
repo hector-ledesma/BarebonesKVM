@@ -45,7 +45,7 @@ CALLBACK
 keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 {
 
-	if (nCode >= 0)
+	if (nCode == HC_ACTION)
 	{
 		KBDLLHOOKSTRUCT *kbdStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
 		WPARAM id = wParam;
