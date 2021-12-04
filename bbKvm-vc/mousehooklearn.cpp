@@ -10,6 +10,9 @@
 //	Not fully sure on HHOOK
 HHOOK				_hook2;
 
+//	Global point variable where we store mouse position
+POINT mPos;
+
 LRESULT
 CALLBACK	//	CALLBACK is not a keyword. It's simply a preprocessor macro that gets replaced with the appropriate calling convention, which as you already noted is __stdcall.
 MouseHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
@@ -32,27 +35,49 @@ MouseHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 					>> If there's a difference in location, we send a mouse move message to the client.
 
 			For scrolling and extra buttons, the mouseData property of the struct will contain our info:
-				> For scrollwheel, the high-order word is the wheel	DELTA. 
-					>> The low-order word is reserved. A positive value indicates that the wheel rotated FORWARD (up, away from the user); a negative value indicates that the wheel rotated BACKWARD (dow, towards the user).
+				> For scrollwheel, the high-order word is the wheel	DELTA. A positive value indicates that the wheel rotated FORWARD (up, away from the user); a negative value indicates that the wheel rotated BACKWARD (dow, towards the user).
+					>> The low-order word is reserved. 
 				> For wheel click, the low-order word is WHEEL_DELTA.
 
-				> Any other message has to do with the extra buttons on a mouse. The high-order word specifies which X button was pressed/released.
-					>> The low-order word is reserved. This value can be:
+				> Any other message has to do with the extra buttons on a mouse. The high-order word specifies which X button was pressed/released. This value can be:
 						|-- XBUTTON1 (0x0001) 
 						|-- XBUTTON2 (0x0002)
+					>> The low-order word is reserved. 
 
 			We don't care about any other info, as the flags are only related to injection.
 		*/
-		if (wParam == WM_MOUSEMOVE)
+
+		switch (wParam)
 		{
-			std::cout << "Mouse is moving:" << std::endl;
-			std::cout << "\t|---- X:\t" << msStruct.pt.x << std::endl;
-			std::cout << "\t|---- Y:\t" << msStruct.pt.y << std::endl;
-		}
-		if (wParam == WM_LBUTTONDOWN)
-		{
-			std::cout << "Button down" << std::endl;
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_LBUTTONDBLCLK:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_RBUTTONDBLCLK:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MBUTTONDBLCLK:
+			std::cout << "Left or Right button pressed." << std::endl;
 			PostQuitMessage(0);
+			break;
+		case WM_MOUSEMOVE:
+			
+			std::cout << "Current mouse position:" << std::endl;
+			std::cout << "\t|---- X:\t" << mPos.x << std::endl;
+			std::cout << "\t|---- Y:\t" << mPos.y << std::endl;
+
+			std::cout << "Moving by:" << std::endl;
+			std::cout << "\t|---- X:\t" << mPos.x - msStruct.pt.x << std::endl;
+			std::cout << "\t|---- Y:\t" << mPos.y - msStruct.pt.y << std::endl;
+			break;
+		case WM_MOUSEWHEEL:
+			std::cout << "Mouse wheel event:"<< std::endl;
+			std::cout << "\t|---- DELTA:\t" << (short)HIWORD(msStruct.mouseData) << std::endl;
+			break;
+		default:
+			std::cout << "Mouse event not accounted for: " << wParam << std::endl;
+			break;
 		}
 
 	}
@@ -78,6 +103,8 @@ int
 main()
 {
 
+	//SetCursorPos(50,50);
+	GetCursorPos(&mPos);
 	MouseSetHook();
 
 	/*
