@@ -46,7 +46,7 @@ MouseHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 
 			We don't care about any other info, as the flags are only related to injection.
 		*/
-
+		short delta = 0;
 		switch (wParam)
 		{
 		case WM_LBUTTONDOWN:
@@ -73,7 +73,9 @@ MouseHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			break;
 		case WM_MOUSEWHEEL:
 			std::cout << "Mouse wheel event:"<< std::endl;
-			std::cout << "\t|---- DELTA:\t" << (short)HIWORD(msStruct.mouseData) << std::endl;
+			delta = HIWORD(msStruct.mouseData);
+			std::cout << "\t|---- DELTA:\t" << delta << std::endl;
+			std::cout << "\t|---- DIRECTION:\t" << (delta > 0 ? "UP" : "DOWN") << std::endl;
 			break;
 		default:
 			std::cout << "Mouse event not accounted for: " << wParam << std::endl;
@@ -103,8 +105,13 @@ int
 main()
 {
 
-	//SetCursorPos(50,50);
-	GetCursorPos(&mPos);
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+	std::cout << "Screen size is: " << width << "x" << height << std::endl;
+	mPos.x = width / 2;
+	mPos.y = height / 2;
+	SetCursorPos(mPos.x,mPos.y);
+	//GetCursorPos(&mPos);
 	MouseSetHook();
 
 	/*
