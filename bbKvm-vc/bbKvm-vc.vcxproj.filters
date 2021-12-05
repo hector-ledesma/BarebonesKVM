@@ -95,6 +95,9 @@
     <ClInclude Include="HooksHandler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="TCPSocketController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ScreenInfo.h">
       <Filter>Source Files</Filter>
     </ClInclude>

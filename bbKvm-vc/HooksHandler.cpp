@@ -1,4 +1,5 @@
 #include "Server.h"
+#include "ScreenInfo.h"
 #include "HooksHandler.h"
 
 #include <iostream>
@@ -8,6 +9,8 @@
 
 HHOOK g_kbHook;
 HHOOK g_msHook;
+
+ScreenInfo* g_screen = &ScreenInfo::getInstance();
 
 HooksHandler::HooksHandler()
 {
@@ -56,13 +59,27 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 		//	For the time being, we'll use the tab key to handle locking and unlocking the main screen which will determine which device we control.
 		if (id == WM_KEYUP && wParam == VK_TAB)
 		{
-			if (Server::s_screen.isLocked())
-				Server::s_screen.unlockMouse();
+			std::cout << "\n[KeyboardHookCallback] ---- Tab key pressed." << std::endl;
+
+			if (g_screen->isLocked())
+			{
+				std::cout << "\t|---- Unlocking mouse." << std::endl;
+				g_screen->unlockMouse();
+			}
 			else
-				Server::s_screen.lockMouse();
+			{
+				std::cout << "\t|---- Locking mouse." << std::endl;
+				g_screen->lockMouse();
+			}
 		}
 
-		if (!Server::s_screen.isLocked())
+		if (wParam == VK_ESCAPE)
+		{
+			std::cout << "\n[KeyboardHookCallback] ---- ESC pressed, terminating program." << std::endl;
+			PostQuitMessage(0);
+		}
+
+		if (!g_screen->isLocked())
 		{
 			LPARAM lParam = 0;					//	This value will contain all of our flags. Specific bits will be set to 1.
 		//	For all the bitshifting, I'm copying the amount of shifting done from the barrier codebase.
@@ -105,10 +122,10 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 LRESULT
 CALLBACK
 mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
-	if (nCode == HC_ACTION && !Server::s_screen.isLocked())
+	if (nCode == HC_ACTION && !g_screen->isLocked())
 	{
 		MSLLHOOKSTRUCT msStruct = *((MSLLHOOKSTRUCT*)lParam);
-		POINT mPos = Server::s_screen.coords();
+		POINT mPos = g_screen->coords();
 
 		short delta = 0;
 		switch (wParam)
@@ -146,10 +163,10 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 			break;
 		}
 
+		return 1;
 	}
 
-	//return CallNextHookEx(_hook2, nCode, wParam, lParam);
-	return 1;
+	return CallNextHookEx(g_msHook, nCode, wParam, lParam);
 }
 
 void

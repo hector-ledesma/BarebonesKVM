@@ -1,6 +1,13 @@
 #pragma once
 #include <Windows.h>
 
+class ScreenDimensions
+{
+public:
+	int	m_width = 0;
+	int	m_height = 0;
+};
+
 /*
 	We'll want to use information about our system's display:
 
@@ -13,24 +20,9 @@
 */
 class ScreenInfo
 {
-public:
-
-	class ScreenDimensions
-	{
-	public:
-		int	m_width = 0;
-		int	m_height = 0;
-	};
-
+private:
 	ScreenInfo();
 
-	bool lockMouse();
-	bool unlockMouse();
-	bool isLocked() { return s_lock; }
-
-	POINT coords() { return m_mPos; }
-
-private:
 	POINT				m_mPos;
 	ScreenDimensions	m_screen;
 
@@ -39,5 +31,22 @@ private:
 		 >> Locked = communicate input to client. Else, we're controlling this computer.
 	*/
 	bool s_lock;
+
+public:
+	static ScreenInfo& getInstance()
+	{
+		static ScreenInfo instance;
+		return instance;
+	}
+	ScreenInfo(ScreenInfo const&)		= delete;
+	void operator=(ScreenInfo const&)	= delete;
+
+	bool lockMouse();
+	bool unlockMouse();
+	bool isLocked();
+
+	POINT coords();
+
+
 };
 

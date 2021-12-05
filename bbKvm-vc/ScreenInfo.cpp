@@ -14,6 +14,7 @@ ScreenInfo::ScreenInfo()
 	m_mPos.y = screenHeight / 2;
 
 	s_lock = false;
+
 }
 
 bool
@@ -29,4 +30,15 @@ ScreenInfo::unlockMouse()
 {
 	s_lock = false;
 	return s_lock;
+}
+
+bool
+ScreenInfo::isLocked()
+{
+	return s_lock;
+}
+
+POINT 
+ScreenInfo::coords() { 
+	return m_mPos; 
 }
