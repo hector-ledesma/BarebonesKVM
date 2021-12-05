@@ -2,6 +2,7 @@
 #include <WinSock2.h>
 #include "ServerSocketController.h"
 #include "HooksHandler.h"
+#include "ScreenInfo.h"
 
 #define DEFAULT_HOST "localhost"
 #define DEFAULT_PORT "27015"
@@ -57,5 +58,6 @@ private:
 
 	HooksHandler			m_handler;
 	
+	ScreenInfo				m_screen;
 };
 

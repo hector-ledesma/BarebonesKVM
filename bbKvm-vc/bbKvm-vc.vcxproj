@@ -145,6 +145,7 @@
     <ClCompile Include="kbhooklearn.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mousehooklearn.cpp" />
+    <ClCompile Include="ScreenInfo.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="serverlearn.cpp" />
     <ClCompile Include="ServerSocketController.cpp" />
@@ -154,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="ClientSocketController.h" />
     <ClInclude Include="HooksHandler.h" />
+    <ClInclude Include="ScreenInfo.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerSocketController.h" />
     <ClInclude Include="TCPSocketController.h" />
