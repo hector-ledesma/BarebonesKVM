@@ -9,6 +9,7 @@ public:
 
 	//static HHOOK getKbHook() { return m_kbHook; };
 	void setHooks();
+	void setMsHook();
 	//static HHOOK m_kbHook;
 private:
 	void setKbHook();

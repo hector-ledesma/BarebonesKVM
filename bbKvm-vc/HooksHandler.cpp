@@ -1,3 +1,4 @@
+#include "Server.h"
 #include "HooksHandler.h"
 
 #include <iostream>
@@ -6,6 +7,7 @@
 #define		BBKVM_SIMULATEKEY	(WM_USER + 0)
 
 HHOOK g_kbHook;
+HHOOK g_msHook;
 
 HooksHandler::HooksHandler()
 {
@@ -50,62 +52,104 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 		KBDLLHOOKSTRUCT *kbdStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
 		WPARAM id = wParam;
 		WPARAM wParam = kbdStruct->vkCode;		//	We want to keep the virtual key code intact. So store it as our wParam.
-		LPARAM lParam = 0;					//	This value will contain all of our flags. Specific bits will be set to 1.
+
+		//	For the time being, we'll use the tab key to handle locking and unlocking the main screen which will determine which device we control.
+		if (id == WM_KEYUP && wParam == VK_TAB)
+		{
+			if (Server::s_screen.isLocked())
+				Server::s_screen.unlockMouse();
+			else
+				Server::s_screen.lockMouse();
+		}
+
+		if (!Server::s_screen.isLocked())
+		{
+			LPARAM lParam = 0;					//	This value will contain all of our flags. Specific bits will be set to 1.
 		//	For all the bitshifting, I'm copying the amount of shifting done from the barrier codebase.
 		//	This seems to be arbitrary. It just needs to be consistent across the application.
-		std::cout << "\n[KeyboardHookCallback] ---- hook flags = \t\t" << std::bitset<32>(kbdStruct->flags) << std::endl;
-		if (kbdStruct->flags & LLKHF_EXTENDED)
-		{
-			std::cout << "[KeyboardHookCallback] ---- LLKHF_EXTENDED in flag = \t" << std::bitset<32>(1lu<<24) << std::endl;
-			lParam |= (1lu << 24);				//	extended key
-		}
-		if (kbdStruct->flags & LLKHF_ALTDOWN)
-		{
-			std::cout << "[KeyboardHookCallback] ---- LLKHF_ALTDOWN in flag = \t" << std::bitset<32>(1lu<<29) << std::endl;
-			lParam |= (1lu << 29);				//	context code
-		}
-		if (kbdStruct->flags & LLKHF_UP)
-		{
-			std::cout << "[KeyboardHookCallback] ---- LLKHF_UP in flag = \t\t" << std::bitset<32>(1lu<<31) << std::endl;
-			lParam |= (1lu << 31);				//	transition
-		}
+			std::cout << "\n[KeyboardHookCallback] ---- hook flags = \t\t" << std::bitset<32>(kbdStruct->flags) << std::endl;
+			if (kbdStruct->flags & LLKHF_EXTENDED)
+			{
+				std::cout << "[KeyboardHookCallback] ---- LLKHF_EXTENDED in flag = \t" << std::bitset<32>(1lu << 24) << std::endl;
+				lParam |= (1lu << 24);				//	extended key
+			}
+			if (kbdStruct->flags & LLKHF_ALTDOWN)
+			{
+				std::cout << "[KeyboardHookCallback] ---- LLKHF_ALTDOWN in flag = \t" << std::bitset<32>(1lu << 29) << std::endl;
+				lParam |= (1lu << 29);				//	context code
+			}
+			if (kbdStruct->flags & LLKHF_UP)
+			{
+				std::cout << "[KeyboardHookCallback] ---- LLKHF_UP in flag = \t\t" << std::bitset<32>(1lu << 31) << std::endl;
+				lParam |= (1lu << 31);				//	transition
+			}
 
-		if (wParam == VK_ESCAPE)
-		{
-			std::cout << "\n[KeyboardHookCallback] ---- ESC pressed, terminating program." << std::endl;
-			PostQuitMessage(0);
-		} 
-		else
-		{
-			std::cout << "[KeyboardHookCallback] ---- vkCode = " << wParam << std::endl;
-			std::cout << "[KeyboardHookCallback] ---- message flags = \t\t" << (ULONG)lParam << std::endl;
-			std::cout << "[KeyboardHookCallback] ---- binary = \t\t\t" << std::bitset<32>(lParam) << std::endl;
-			PostMessage(nullptr, BBKVM_SIMULATEKEY, wParam, lParam);
-		}
-
-
-		/*if (id == WM_KEYDOWN)
-		{
-			std::cout << "\n[KeyboardHookCallback] ---- Keydown pressed." << std::endl;	
-			if (kbdStruct->vkCode == VK_ESCAPE)
+			if (wParam == VK_ESCAPE)
 			{
 				std::cout << "\n[KeyboardHookCallback] ---- ESC pressed, terminating program." << std::endl;
 				PostQuitMessage(0);
 			}
-			else if (kbdStruct->vkCode == 0x41)
-				std::cout << "\n[KeyboardHookCallback] ---- Caught the letter 'A'." << std::endl;
-
-			PostMessage(nullptr, SIMULATE_KEYDOWN, wParam, lParam);
+			else
+			{
+				std::cout << "[KeyboardHookCallback] ---- vkCode = " << wParam << std::endl;
+				std::cout << "[KeyboardHookCallback] ---- message flags = \t\t" << (ULONG)lParam << std::endl;
+				std::cout << "[KeyboardHookCallback] ---- binary = \t\t\t" << std::bitset<32>(lParam) << std::endl;
+				PostMessage(nullptr, BBKVM_SIMULATEKEY, wParam, lParam);
+			}
+			return 1;
 		}
-		else if (id == WM_KEYUP)
-		{
-			std::cout << "\n[KeyboardHookCallback] ---- Keyup pressed." << std::endl;
-			PostMessage(nullptr, SIMULATE_KEYUP, wParam, lParam);
-
-		}*/
 	}
-	//return 1;
 	return CallNextHookEx(g_kbHook, nCode, wParam, lParam);
+}
+
+LRESULT
+CALLBACK
+mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
+	if (nCode == HC_ACTION && !Server::s_screen.isLocked())
+	{
+		MSLLHOOKSTRUCT msStruct = *((MSLLHOOKSTRUCT*)lParam);
+		POINT mPos = Server::s_screen.coords();
+
+		short delta = 0;
+		switch (wParam)
+		{
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_LBUTTONDBLCLK:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_RBUTTONDBLCLK:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MBUTTONDBLCLK:
+			std::cout << "Left or Right button pressed." << std::endl;
+			PostQuitMessage(0);
+			break;
+		case WM_MOUSEMOVE:
+
+			std::cout << "Current mouse position:" << std::endl;
+			std::cout << "\t|---- X:\t" << mPos.x << std::endl;
+			std::cout << "\t|---- Y:\t" << mPos.y << std::endl;
+
+			std::cout << "Moving by:" << std::endl;
+			std::cout << "\t|---- X:\t" << mPos.x - msStruct.pt.x << std::endl;
+			std::cout << "\t|---- Y:\t" << mPos.y - msStruct.pt.y << std::endl;
+			break;
+		case WM_MOUSEWHEEL:
+			std::cout << "Mouse wheel event:" << std::endl;
+			delta = HIWORD(msStruct.mouseData);
+			std::cout << "\t|---- DELTA:\t" << delta << std::endl;
+			std::cout << "\t|---- DIRECTION:\t" << (delta > 0 ? "UP" : "DOWN") << std::endl;
+			break;
+		default:
+			std::cout << "Mouse event not accounted for: " << wParam << std::endl;
+			break;
+		}
+
+	}
+
+	//return CallNextHookEx(_hook2, nCode, wParam, lParam);
+	return 1;
 }
 
 void
@@ -113,6 +157,7 @@ HooksHandler::setHooks()
 {
 	std::cout << "\n[HooksHandler] ---- Setting up hooks." << std::endl;
 	setKbHook();
+	setMsHook();
 }
 
 void 
@@ -125,4 +170,15 @@ HooksHandler::setKbHook()
 		throw - 1;
 	}
 	std::cerr << "\t|----  WH_KEYBOARD_LL hook set." << std::endl;
+}
+
+void
+HooksHandler::setMsHook()
+{
+	if (!(g_msHook = SetWindowsHookEx(WH_MOUSE_LL, mouseLLhookCallback, NULL, 0)))
+	{
+		std::cerr << "\n[HooksHandler] ---- Failed to set WH_MOUSE_LL hook." << std::endl;
+		throw - 1;
+	}
+	std::cerr << "\t|----  WH_MOUSE_LL hook set." << std::endl;
 }

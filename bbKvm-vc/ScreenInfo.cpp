@@ -7,18 +7,26 @@ ScreenInfo::ScreenInfo()
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-	screen.m_width = screenWidth;
-	screen.m_height = screenHeight;
+	m_screen.m_width = screenWidth;
+	m_screen.m_height = screenHeight;
 
-	mPos.x = screenWidth / 2;
-	mPos.y = screenHeight / 2;
+	m_mPos.x = screenWidth / 2;
+	m_mPos.y = screenHeight / 2;
 
-	s_isLocked = false;
+	s_lock = false;
 }
 
 bool
 ScreenInfo::lockMouse()
 {
-	SetCursorPos(mPos.x, mPos.y);
-	s_isLocked = true;
+	s_lock = true;
+	SetCursorPos(m_mPos.x, m_mPos.y);
+	return s_lock;
+}
+
+bool
+ScreenInfo::unlockMouse()
+{
+	s_lock = false;
+	return s_lock;
 }

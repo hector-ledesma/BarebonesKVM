@@ -21,8 +21,12 @@ public:
 
 	//	Main network/server loop.
 	void run();
-
 	
+	/*
+		We're gonna want this member to be static:
+			>> We need it accessible from our hooks, and we'll only have one unique screen for the server.
+	*/
+	static ScreenInfo		s_screen;
 
 private:
 
@@ -58,6 +62,5 @@ private:
 
 	HooksHandler			m_handler;
 	
-	ScreenInfo				m_screen;
 };
 

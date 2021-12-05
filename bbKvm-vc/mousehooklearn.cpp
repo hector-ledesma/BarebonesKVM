@@ -102,7 +102,7 @@ MouseSetHook()
 }
 
 int
-main()
+mslearn_main()
 {
 
 	int width = GetSystemMetrics(SM_CXSCREEN);
@@ -133,4 +133,5 @@ main()
 	}
 
 	UnhookWindowsHookEx(_hook2);
+	return 1;
 }
