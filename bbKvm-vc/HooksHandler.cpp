@@ -5,7 +5,13 @@
 #include <iostream>
 #include <bitset>
 
-#define		BBKVM_SIMULATEKEY	(WM_USER + 0)
+#define		BBKVM_BASE			(WM_USER + 0)
+
+#define		BBKVM_MOUSEMOVE		(BBKVM_BASE + 1)
+#define		BBKVM_MOUSEWHEEL	(BBKVM_BASE + 2)
+#define		BBKVM_XBUTTON		(BBKVM_BASE + 3)
+
+#define		BBKVM_SIMULATEKEY	(BBKVM_BASE + 4)
 
 HHOOK g_kbHook;
 HHOOK g_msHook;
@@ -134,6 +140,10 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 				|-- XBUTTON if MOUSEEVENTF_XDOWN or MOUSEEVENTF_XUP
 				|-- 0 if neither
 		|---- [ DWORD ]	flags
+
+	We can use shorts for our mouse movement as we'll use relative values. But given that a WPARAM is just a pointer to a u_int, we can't make a double where one half is the mouse move data, and the other half is the mouseData. Therefore:
+		|---- WPARAM -> Will contain EITHER [ mouse move data ] or [ mouse data ].
+		|---- LPARAM -> Will always contain FLAGS.
 */
 LRESULT
 CALLBACK
@@ -141,28 +151,77 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 	if (nCode == HC_ACTION && !g_screen->isLocked())
 	{
 		MSLLHOOKSTRUCT msStruct = *((MSLLHOOKSTRUCT*)lParam);
-		POINT mPos = g_screen->coords();
+		POINT mLock = g_screen->coords();
+		WPARAM id = wParam;
+		WPARAM wParam = 0;
+		LPARAM lParam = 0;
 
-		short delta = 0;
-		switch (wParam)
+		//	TODO: - Handle flags first, as they'll always be sent even if we're sending both mouse movement and other mouse input.
+		switch (id)
 		{
-		case WM_LBUTTONDOWN:
-		case WM_LBUTTONUP:
-		case WM_LBUTTONDBLCLK:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONUP:
-		case WM_RBUTTONDBLCLK:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONUP:
-		case WM_MBUTTONDBLCLK:
 		case WM_MOUSEMOVE:
+			lParam |= MOUSEEVENTF_MOVE;
+			break;
+		case WM_LBUTTONDOWN:
+			lParam |= MOUSEEVENTF_LEFTDOWN;
+			break;
+		case WM_LBUTTONUP:
+			lParam |= MOUSEEVENTF_LEFTUP;
+			break;
+		case WM_RBUTTONDOWN:
+			lParam |= MOUSEEVENTF_RIGHTDOWN;
+			break;
+		case WM_RBUTTONUP:
+			lParam |= MOUSEEVENTF_RIGHTUP;
+			break;
+		case WM_MBUTTONDOWN:
+			lParam |= MOUSEEVENTF_MIDDLEDOWN;
+			break;
+		case WM_MBUTTONUP:
+			lParam |= MOUSEEVENTF_MIDDLEUP;
+			break;
+		case WM_XBUTTONDOWN:
+			lParam |= MOUSEEVENTF_XDOWN;
+			break;
+		case WM_XBUTTONUP:
+			lParam |= MOUSEEVENTF_XUP;
 			break;
 		case WM_MOUSEWHEEL:
-			delta = HIWORD(msStruct.mouseData);
+			lParam |= MOUSEEVENTF_WHEEL;
 			break;
+		case WM_XBUTTONDBLCLK:
+		case WM_MBUTTONDBLCLK:
+		case WM_RBUTTONDBLCLK:
+		case WM_LBUTTONDBLCLK:
 		default:
 			std::cout << "Mouse event not accounted for: " << wParam << std::endl;
 			break;
+		}
+
+		//	If there's any mouse movement, send a mouse move message.
+		int moveX = mLock.x - msStruct.pt.x;
+		int moveY = mLock.y - msStruct.pt.y;
+		if (moveX != 0 || moveY != 0)
+		{
+			wParam = MAKELONG(moveX, moveY);
+			PostMessage(nullptr, BBKVM_MOUSEMOVE, wParam, lParam);
+		}
+
+		//	Regardless of whether the msg is for mouse wheel or xbutton, we'll extract the HIWORD into our wParam.
+		//	What matters to us, is communicating to the client what type of message it was.
+		wParam = HIWORD(msStruct.mouseData);
+		if (id == WM_MOUSEWHEEL)
+		{
+			PostMessage(nullptr, BBKVM_MOUSEWHEEL, wParam, lParam);
+		}
+		else if (id == WM_XBUTTONUP || id == WM_XBUTTONDOWN)
+		{
+			PostMessage(nullptr, BBKVM_XBUTTON, wParam, lParam);
+		}
+		// unless it's neither, in which case leave it at 0
+		else
+		{
+			PostMessage(nullptr, BBKVM_XBUTTON, 0, lParam);
 		}
 
 		return 1;
