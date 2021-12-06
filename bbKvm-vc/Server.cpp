@@ -3,7 +3,14 @@
 #include <string>
 #include <sstream>
 
-#define		BBKVM_SIMULATEKEY	(WM_USER + 0)
+#define		BBKVM_BASE			(WM_USER + 0)
+
+#define		BBKVM_MOUSEMOVE		(BBKVM_BASE + 1)
+#define		BBKVM_MOUSEWHEEL	(BBKVM_BASE + 2)
+#define		BBKVM_XBUTTON		(BBKVM_BASE + 3)
+#define		BBKVM_MOUSECLICK	(BBKVM_BASE + 4)
+
+#define		BBKVM_SIMULATEKEY	(BBKVM_BASE + 5)
 
 /*
 	The Server constructor will first initialize our controller using our defined port and host in Server.h.
@@ -114,19 +121,41 @@ Server::run()
 		std::cout << "[Server] ---- message found: " << msg.message << std::endl;
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
+
+		std::ostringstream data;
 		
-		ss << "\t\t|---Message: " << msg.message << "\r\n" <<
-			"\t\t|--wParam: " << msg.wParam << "\r\n"
-			"\t\t|--lParam: " << (ULONG)msg.lParam << "\r\n";
 
-		std::cout << ss.str() << std::endl;
+		switch (msg.message)
+		{
+		case BBKVM_SIMULATEKEY:
+			//	TODO: - Make a create key msg method.
+			std::cout << "[Server] ---- Simulating key." << std::endl;
+			ss << "\t\t|---Message: " << msg.message << "\r\n" <<
+				"\t\t|--wParam: " << msg.wParam << "\r\n"
+				"\t\t|--lParam: " << (ULONG)msg.lParam << "\r\n";
+			std::cout << ss.str() << std::endl;
+			data << msg.wParam << "[[" << (ULONG)msg.lParam;
+			break;
 
-		if (msg.wParam == 0x41) std::cout << "yee yee" << std::endl;
+		case BBKVM_MOUSEMOVE:
+			std::cout << "[Server] ---- Simulating mouse movement." << std::endl;
+			break;
+		case BBKVM_MOUSEWHEEL:
+			std::cout << "[Server] ---- Simulating scroll wheel." << std::endl;
+			break;
+		case BBKVM_XBUTTON:
+			std::cout << "[Server] ---- Simulating x button." << std::endl;
+			break;
+		case BBKVM_MOUSECLICK:
+			std::cout << "[Server] ---- Simulating click." << std::endl;
+			break;
 
-		std::ostringstream info;
-		info << msg.wParam << "[[" << (ULONG)msg.lParam;
+		default:
+			std::cout << "[Server] ---- message unaccounted for: " << msg.message << std::endl;
+			break;
+		}
 
-		iSendResult = send(m_client, info.str().c_str(), info.str().size() + 1, 0);
+		iSendResult = send(m_client, data.str().c_str(), data.str().size() + 1, 0);
 		//iSendResult = send(m_client, buf, sizeof(KBDLLHOOKSTRUCT), 0);
 		if (iSendResult == SOCKET_ERROR)
 		{

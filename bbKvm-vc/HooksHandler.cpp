@@ -10,8 +10,9 @@
 #define		BBKVM_MOUSEMOVE		(BBKVM_BASE + 1)
 #define		BBKVM_MOUSEWHEEL	(BBKVM_BASE + 2)
 #define		BBKVM_XBUTTON		(BBKVM_BASE + 3)
+#define		BBKVM_MOUSECLICK	(BBKVM_BASE + 4)
 
-#define		BBKVM_SIMULATEKEY	(BBKVM_BASE + 4)
+#define		BBKVM_SIMULATEKEY	(BBKVM_BASE + 5)
 
 HHOOK g_kbHook;
 HHOOK g_msHook;
@@ -87,7 +88,7 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			PostQuitMessage(0);
 		}
 
-		if (!g_screen->isLocked())
+		if (g_screen->isLocked())
 		{
 			LPARAM lParam = 0;					//	This value will contain all of our flags. Specific bits will be set to 1.
 		//	For all the bitshifting, I'm copying the amount of shifting done from the barrier codebase.
@@ -138,7 +139,7 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 		|---- [ DWORD ]	mouseData
 				|-- Wheel delta if MOUSEEVENTF_WHEEN
 				|-- XBUTTON if MOUSEEVENTF_XDOWN or MOUSEEVENTF_XUP
-				|-- 0 if neither
+				|-- 0 if neithert
 		|---- [ DWORD ]	flags
 
 	We can use shorts for our mouse movement as we'll use relative values. But given that a WPARAM is just a pointer to a u_int, we can't make a double where one half is the mouse move data, and the other half is the mouseData. Therefore:
@@ -148,13 +149,14 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 LRESULT
 CALLBACK
 mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
-	if (nCode == HC_ACTION && !g_screen->isLocked())
+	if (nCode == HC_ACTION && g_screen->isLocked())
 	{
 		MSLLHOOKSTRUCT msStruct = *((MSLLHOOKSTRUCT*)lParam);
 		POINT mLock = g_screen->coords();
 		WPARAM id = wParam;
 		WPARAM wParam = 0;
 		LPARAM lParam = 0;
+		bool isClick = false;
 
 		//	TODO: - Handle flags first, as they'll always be sent even if we're sending both mouse movement and other mouse input.
 		switch (id)
@@ -163,27 +165,35 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 			lParam |= MOUSEEVENTF_MOVE;
 			break;
 		case WM_LBUTTONDOWN:
+			isClick = true;
 			lParam |= MOUSEEVENTF_LEFTDOWN;
 			break;
 		case WM_LBUTTONUP:
+			isClick = true;
 			lParam |= MOUSEEVENTF_LEFTUP;
 			break;
 		case WM_RBUTTONDOWN:
+			isClick = true;
 			lParam |= MOUSEEVENTF_RIGHTDOWN;
 			break;
 		case WM_RBUTTONUP:
+			isClick = true;
 			lParam |= MOUSEEVENTF_RIGHTUP;
 			break;
 		case WM_MBUTTONDOWN:
+			isClick = true;
 			lParam |= MOUSEEVENTF_MIDDLEDOWN;
 			break;
 		case WM_MBUTTONUP:
+			isClick = true;
 			lParam |= MOUSEEVENTF_MIDDLEUP;
 			break;
 		case WM_XBUTTONDOWN:
+			isClick = true;
 			lParam |= MOUSEEVENTF_XDOWN;
 			break;
 		case WM_XBUTTONUP:
+			isClick = true;
 			lParam |= MOUSEEVENTF_XUP;
 			break;
 		case WM_MOUSEWHEEL:
@@ -201,6 +211,13 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 		//	If there's any mouse movement, send a mouse move message.
 		int moveX = mLock.x - msStruct.pt.x;
 		int moveY = mLock.y - msStruct.pt.y;
+		std::cout << "[MouseHookCallback] ---- mLock X = \t" << mLock.x << std::endl;
+		std::cout << "[MouseHookCallback] ---- mLock Y = \t" << mLock.y << std::endl;
+		std::cout << "[MouseHookCallback] ---- mStruct X = \t" << msStruct.pt.x << std::endl;
+		std::cout << "[MouseHookCallback] ---- mStruct Y = \t" << msStruct.pt.y << std::endl;
+		std::cout << "[MouseHookCallback] ---- move X = \t" << moveX << std::endl;
+		std::cout << "[MouseHookCallback] ---- move Y = \t" << moveY << std::endl;
+
 		if (moveX != 0 || moveY != 0)
 		{
 			wParam = MAKELONG(moveX, moveY);
@@ -219,9 +236,9 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 			PostMessage(nullptr, BBKVM_XBUTTON, wParam, lParam);
 		}
 		// unless it's neither, in which case leave it at 0
-		else
+		else if (isClick)
 		{
-			PostMessage(nullptr, BBKVM_XBUTTON, 0, lParam);
+			PostMessage(nullptr, BBKVM_MOUSECLICK, 0, lParam);
 		}
 
 		return 1;
