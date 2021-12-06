@@ -22,6 +22,8 @@ HooksHandler::~HooksHandler()
 	std::cout << "\n[HooksHandler] ---- Destructor called." << std::endl;
 	std::cout << "\t|---- Releasing keyboard hook." << std::endl;
 	UnhookWindowsHookEx(g_kbHook);
+	std::cout << "\t|---- Releasing mouse hook." << std::endl;
+	UnhookWindowsHookEx(g_msHook);
 }
 
 /*
@@ -119,6 +121,20 @@ keyboardLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 	return CallNextHookEx(g_kbHook, nCode, wParam, lParam);
 }
 
+/*
+	Simulating mouse input is giong to require checking quite a few different flags.
+
+	The biggest complications arise due to how many different things can seemingly happen at once for any given hook trigger. Mouse movement (two variables), combined with potential mouse data for middle mouse/scroll wheel or side buttons trigger. As well as multiple flags to flip.
+
+	So one message should contain:
+		|---- [ LONG ]	X mouse movement
+		|---- [ LONG ]	Y mouse movement
+		|---- [ DWORD ]	mouseData
+				|-- Wheel delta if MOUSEEVENTF_WHEEN
+				|-- XBUTTON if MOUSEEVENTF_XDOWN or MOUSEEVENTF_XUP
+				|-- 0 if neither
+		|---- [ DWORD ]	flags
+*/
 LRESULT
 CALLBACK
 mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
@@ -139,24 +155,10 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 		case WM_MBUTTONDOWN:
 		case WM_MBUTTONUP:
 		case WM_MBUTTONDBLCLK:
-			std::cout << "Left or Right button pressed." << std::endl;
-			PostQuitMessage(0);
-			break;
 		case WM_MOUSEMOVE:
-
-			std::cout << "Current mouse position:" << std::endl;
-			std::cout << "\t|---- X:\t" << mPos.x << std::endl;
-			std::cout << "\t|---- Y:\t" << mPos.y << std::endl;
-
-			std::cout << "Moving by:" << std::endl;
-			std::cout << "\t|---- X:\t" << mPos.x - msStruct.pt.x << std::endl;
-			std::cout << "\t|---- Y:\t" << mPos.y - msStruct.pt.y << std::endl;
 			break;
 		case WM_MOUSEWHEEL:
-			std::cout << "Mouse wheel event:" << std::endl;
 			delta = HIWORD(msStruct.mouseData);
-			std::cout << "\t|---- DELTA:\t" << delta << std::endl;
-			std::cout << "\t|---- DIRECTION:\t" << (delta > 0 ? "UP" : "DOWN") << std::endl;
 			break;
 		default:
 			std::cout << "Mouse event not accounted for: " << wParam << std::endl;
