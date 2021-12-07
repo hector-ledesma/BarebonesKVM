@@ -141,7 +141,7 @@ Server::run()
 				"\t\t|--lParam: " << (ULONG)msg.lParam << "\r\n";
 			std::cout << ss.str() << std::endl;
 
-			data << msg.wParam << "[[" << (ULONG)msg.lParam << "[[";
+			data << msg.message << "[[" << msg.wParam << "[[" << (ULONG)msg.lParam << "[[";
 			break;
 
 		case BBKVM_MOUSEMOVE:
