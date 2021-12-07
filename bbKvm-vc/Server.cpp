@@ -154,16 +154,18 @@ Server::run()
 				"\t\t|--flags: " << std::bitset<32>(flags) << "\r\n";
 			std::cout << ss.str() << std::endl;
 
-			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
+			data << msg.message << "[[" << x << "[[" << y << "[[" << msg.lParam << "[[";
 			break;
+
 		case BBKVM_MOUSEWHEEL:	
 			std::cout << "[Server] ---- Simulating scroll wheel." << std::endl;
 			ss << "\t\t|---Mouse delta: " << (short)msg.wParam << "\r\n" <<
 				"\t\t|--flags: " << std::bitset<32>(flags) << "\r\n";
 			std::cout << ss.str() << std::endl;
 
-			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
+			data << msg.message << "[[" << (short)msg.wParam << "[[" << msg.lParam << "[[";
 			break;
+
 		case BBKVM_XBUTTON:
 			std::cout << "[Server] ---- Simulating x button." << std::endl;
 			ss << "\t\t|---XBUTTON: " << (short)msg.wParam << "\r\n" <<
@@ -172,6 +174,7 @@ Server::run()
 
 			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
 			break;
+
 		case BBKVM_MOUSECLICK:
 			std::cout << "[Server] ---- Simulating click." << std::endl;
 			ss << "\t\t|--flags: " << std::bitset<32>(flags) << "\r\n";
@@ -179,6 +182,7 @@ Server::run()
 			
 			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
 			break;
+
 		default:
 			std::cout << "[Server] ---- message unaccounted for: " << msg.message << std::endl;
 			break;
