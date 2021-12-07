@@ -12,6 +12,7 @@ HHOOK				_hook2;
 
 //	Global point variable where we store mouse position
 POINT mPos;
+POINT test;
 
 LRESULT
 CALLBACK	//	CALLBACK is not a keyword. It's simply a preprocessor macro that gets replaced with the appropriate calling convention, which as you already noted is __stdcall.
@@ -47,6 +48,7 @@ MouseHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			We don't care about any other info, as the flags are only related to injection.
 		*/
 		short delta = 0;
+		int moveX = 0, moveY = 0;
 		switch (wParam)
 		{
 		case WM_LBUTTONDOWN:
@@ -62,14 +64,16 @@ MouseHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
 			PostQuitMessage(0);
 			break;
 		case WM_MOUSEMOVE:
-			
-			std::cout << "Current mouse position:" << std::endl;
-			std::cout << "\t|---- X:\t" << mPos.x << std::endl;
-			std::cout << "\t|---- Y:\t" << mPos.y << std::endl;
 
-			std::cout << "Moving by:" << std::endl;
-			std::cout << "\t|---- X:\t" << mPos.x - msStruct.pt.x << std::endl;
-			std::cout << "\t|---- Y:\t" << mPos.y - msStruct.pt.y << std::endl;
+			moveX = mPos.x - msStruct.pt.x;
+			moveY = mPos.y - msStruct.pt.y;
+			if (moveX != 0 || moveY != 0)
+			{
+				std::cout << "Moving by:" << std::endl;
+				std::cout << "\t|---- X:\t" << moveX << std::endl;
+				std::cout << "\t|---- Y:\t" << moveY << std::endl;
+			}
+			
 			break;
 		case WM_MOUSEWHEEL:
 			std::cout << "Mouse wheel event:"<< std::endl;
@@ -102,16 +106,17 @@ MouseSetHook()
 }
 
 int
-mslearn_main()
+main()
 {
-
+	SetProcessDPIAware();
 	int width = GetSystemMetrics(SM_CXSCREEN);
 	int height = GetSystemMetrics(SM_CYSCREEN);
 	std::cout << "Screen size is: " << width << "x" << height << std::endl;
 	mPos.x = width / 2;
 	mPos.y = height / 2;
+	std::cout << "Position to set is: " << mPos.x << ", " << mPos.y << std::endl;
 	SetCursorPos(mPos.x,mPos.y);
-	//GetCursorPos(&mPos);
+	GetPhysicalCursorPos(&test);
 	MouseSetHook();
 
 	/*
