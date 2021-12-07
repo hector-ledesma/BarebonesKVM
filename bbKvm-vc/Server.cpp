@@ -2,6 +2,9 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <bitset>
+
+#include "ScreenInfo.h"
 
 #define		BBKVM_BASE			(WM_USER + 0)
 
@@ -69,6 +72,7 @@ void
 Server::run()
 {
 	m_handler.setHooks();
+	
 
 	// If we don't have a client yet, stop until we receive a connection request and successfully initialize our client socket.
 	if (!haveClient()) getClient();
@@ -111,6 +115,7 @@ Server::run()
 	//} while (iResult > 0);
 	
 	std::cout << "\n[Server] ---- Handshake complete. Connection with Client established." << std::endl;
+	ScreenInfo::getInstance().lockMouse();
 
 	//	------ Test message loop here -----
 	MSG msg;
@@ -124,7 +129,8 @@ Server::run()
 
 		std::ostringstream data;
 		
-
+		short x, y;
+		int flags = msg.lParam;
 		switch (msg.message)
 		{
 		case BBKVM_SIMULATEKEY:
@@ -134,22 +140,45 @@ Server::run()
 				"\t\t|--wParam: " << msg.wParam << "\r\n"
 				"\t\t|--lParam: " << (ULONG)msg.lParam << "\r\n";
 			std::cout << ss.str() << std::endl;
-			data << msg.wParam << "[[" << (ULONG)msg.lParam;
+
+			data << msg.wParam << "[[" << (ULONG)msg.lParam << "[[";
 			break;
 
 		case BBKVM_MOUSEMOVE:
 			std::cout << "[Server] ---- Simulating mouse movement." << std::endl;
+
+			x = (signed short)HIWORD(msg.wParam);
+			y = (signed short)LOWORD(msg.wParam);
+
+			ss << "\t\t|---Move by: " << "(" << x << ", " << y << ")" << "\r\n" <<
+				"\t\t|--flags: " << std::bitset<32>(flags) << "\r\n";
+			std::cout << ss.str() << std::endl;
+
+			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
 			break;
-		case BBKVM_MOUSEWHEEL:
+		case BBKVM_MOUSEWHEEL:	
 			std::cout << "[Server] ---- Simulating scroll wheel." << std::endl;
+			ss << "\t\t|---Mouse delta: " << (short)msg.wParam << "\r\n" <<
+				"\t\t|--flags: " << std::bitset<32>(flags) << "\r\n";
+			std::cout << ss.str() << std::endl;
+
+			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
 			break;
 		case BBKVM_XBUTTON:
 			std::cout << "[Server] ---- Simulating x button." << std::endl;
+			ss << "\t\t|---XBUTTON: " << (short)msg.wParam << "\r\n" <<
+				"\t\t|--flags: " << std::bitset<32>(flags) << "\r\n";
+			std::cout << ss.str() << std::endl;
+
+			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
 			break;
 		case BBKVM_MOUSECLICK:
 			std::cout << "[Server] ---- Simulating click." << std::endl;
+			ss << "\t\t|--flags: " << std::bitset<32>(flags) << "\r\n";
+			std::cout << ss.str() << std::endl;
+			
+			data << msg.message << "[[" << msg.wParam << "[[" << msg.lParam << "[[";
 			break;
-
 		default:
 			std::cout << "[Server] ---- message unaccounted for: " << msg.message << std::endl;
 			break;

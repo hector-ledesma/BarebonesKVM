@@ -17,6 +17,8 @@ public:
 
 	> We'll also want to contain global functionality related to controlling the device within this class.
 		>> e.g.: mouse lock.
+
+	Ultimately, I decided the best course of action was to have a single global instance for this object. Our hook callback functions sit outside of the scope of any object, and our server will only ever need a single controller class for its screens.
 */
 class ScreenInfo
 {

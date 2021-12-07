@@ -215,8 +215,6 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 
 		if (moveX != 0 || moveY != 0)
 		{
-			std::cout << "[MouseHookCallback] ---- move X = \t" << moveX << std::endl;
-			std::cout << "[MouseHookCallback] ---- move Y = \t" << moveY << std::endl;
 			wParam = MAKELONG(moveX, moveY);
 			PostMessage(nullptr, BBKVM_MOUSEMOVE, wParam, lParam);
 		}
