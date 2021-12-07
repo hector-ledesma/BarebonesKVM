@@ -106,7 +106,7 @@ MouseSetHook()
 }
 
 int
-main()
+mslearn_main()
 {
 	SetProcessDPIAware();
 	int width = GetSystemMetrics(SM_CXSCREEN);

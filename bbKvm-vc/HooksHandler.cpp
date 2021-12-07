@@ -211,15 +211,12 @@ mouseLLhookCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 		//	If there's any mouse movement, send a mouse move message.
 		int moveX = mLock.x - msStruct.pt.x;
 		int moveY = mLock.y - msStruct.pt.y;
-		std::cout << "[MouseHookCallback] ---- mLock X = \t" << mLock.x << std::endl;
-		std::cout << "[MouseHookCallback] ---- mLock Y = \t" << mLock.y << std::endl;
-		std::cout << "[MouseHookCallback] ---- mStruct X = \t" << msStruct.pt.x << std::endl;
-		std::cout << "[MouseHookCallback] ---- mStruct Y = \t" << msStruct.pt.y << std::endl;
-		std::cout << "[MouseHookCallback] ---- move X = \t" << moveX << std::endl;
-		std::cout << "[MouseHookCallback] ---- move Y = \t" << moveY << std::endl;
+		
 
 		if (moveX != 0 || moveY != 0)
 		{
+			std::cout << "[MouseHookCallback] ---- move X = \t" << moveX << std::endl;
+			std::cout << "[MouseHookCallback] ---- move Y = \t" << moveY << std::endl;
 			wParam = MAKELONG(moveX, moveY);
 			PostMessage(nullptr, BBKVM_MOUSEMOVE, wParam, lParam);
 		}
