@@ -1,7 +1,7 @@
 #include "Server.h"
 #include <iostream>
 
-int main_main()
+int main()
 {
 	try
 	{

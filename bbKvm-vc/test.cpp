@@ -3,7 +3,7 @@
 
 
 void
-main() {
+test_main() {
 
 	INPUT input;
 	input.type = INPUT_MOUSE;

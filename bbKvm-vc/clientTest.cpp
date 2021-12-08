@@ -23,7 +23,7 @@
 
 
 void
-clienttest_main() {
+main() {
 	WSADATA wsaData;
 	int wsOk = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (wsOk != 0)
@@ -257,52 +257,66 @@ clienttest_main() {
 					}
 					break;
 				case BBKVM_MOUSEMOVE:
+					std::cout << "Moving x: " << std::stoi(recvData.at(1)) << std::endl;
+					std::cout << "Moving y: " << std::stoi(recvData.at(2)) << std::endl;
+					std::cout << "flags: " << std::bitset<32>(std::stoi(recvData.at(3))) << std::endl;
+					input.type = INPUT_MOUSE;
+					input.mi.dx = std::stoi(recvData.at(2)) * -1;
+					input.mi.dy = std::stoi(recvData.at(1)) * -1;
+					input.mi.dwFlags = std::stoi(recvData.at(3));
+					input.mi.mouseData = 0;
+					input.mi.time = 0;
+					uSent = SendInput(1, &input, sizeof(INPUT));
+					if (uSent != 1)
+					{
+						std::cerr << "SendInput Failed :" << GetLastError() << std::endl;
+					}
+					break;
 				case BBKVM_MOUSEWHEEL:
+					std::cout << "Scrolling : " << (std::stoi(recvData.at(1)) > 0 ? "UP" : "DOWN") << " " << std::stoi(recvData.at(1)) << std::endl;
+					std::cout << "flags: " << std::bitset<32>(std::stoi(recvData.at(2))) << std::endl;
+					input.type = INPUT_MOUSE;
+					input.mi.dwFlags = std::stoi(recvData.at(2));
+					input.mi.mouseData = std::stoi(recvData.at(1));
+					input.mi.time = 0;
+					uSent = SendInput(1, &input, sizeof(INPUT));
+					if (uSent != 1)
+					{
+						std::cerr << "SendInput Failed :" << GetLastError() << std::endl;
+					}
+					break;
 				case BBKVM_MOUSECLICK:
+					std::cout << "Clicking." << std::endl;
+					std::cout << "flags: " << std::bitset<32>(std::stoi(recvData.at(2))) << std::endl;
+					input.type = INPUT_MOUSE;
+					input.mi.dwFlags = std::stoi(recvData.at(2));
+					input.mi.mouseData = 0;
+					input.mi.time = 0;
+					uSent = SendInput(1, &input, sizeof(INPUT));
+					if (uSent != 1)
+					{
+						std::cerr << "SendInput Failed :" << GetLastError() << std::endl;
+					}
+					break;
 				case BBKVM_XBUTTON:
+					std::cout << "Xbutton" << std::endl;
+					std::cout << "flags: " << std::bitset<32>(std::stoi(recvData.at(2))) << std::endl;
+					input.type = INPUT_MOUSE;
+					input.mi.dwFlags = std::stoi(recvData.at(2));
+					input.mi.mouseData = std::stoi(recvData.at(1));
+					input.mi.time = 0;
+					uSent = SendInput(1, &input, sizeof(INPUT));
+					if (uSent != 1)
+					{
+						std::cerr << "SendInput Failed :" << GetLastError() << std::endl;
+					}
+					break;
 				default:
 					std::cout << "Unrecognizable id: " << id << std::endl;
 					break;
 				}
 
 			}
-			/*std::string delimiter = "[[";
-			auto limit = data.find(delimiter);
-			if (limit != std::string::npos)
-			{
-				std::string s_vkCode = data.substr(0, limit);
-				std::string s_flag = data.substr(limit + delimiter.length(), data.size());
-				std::cout << "vkCode string is:\t" << s_vkCode << std::endl;
-				std::cout << "flag string is: \t" << s_flag << std::endl;
-
-				long vkCode = std::stol(s_vkCode, nullptr, 0);
-				ULONG flag = std::stoul(s_flag, nullptr, 0);
-				std::cout << "vkCode long is:\t" << vkCode << std::endl;
-				std::cout << "flag long is: \t" << flag << std::endl;
-
-
-				// Here, we simulate input.
-				INPUT input;
-				input.type = INPUT_KEYBOARD;
-				input.ki.wVk = vkCode;
-				input.ki.wScan = 0;
-				input.ki.dwFlags = 0;
-
-				if (flag & (1lu << 31))
-				{
-					std::cout << "Releasing key." << std::endl;
-					input.ki.dwFlags |= KEYEVENTF_KEYUP;
-				}
-				else
-				{
-					std::cout << "Pressing key" << std::endl;
-				}
-				UINT uSent = SendInput(1, &input, sizeof(INPUT));
-				if (uSent != 1)
-				{
-					std::cerr << "SendInput Failed :" << HRESULT_FROM_WIN32(GetLastError()) << std::endl;
-				}
-			}*/
 
 		}
 		else if (loopResult == 0)

@@ -188,6 +188,7 @@ Server::run()
 			break;
 		}
 
+		std::cout << "[Server] ---- Sending: " << "\n\t|--- " << data.str() << "\n" << std::endl;
 		iSendResult = send(m_client, data.str().c_str(), data.str().size() + 1, 0);
 		//iSendResult = send(m_client, buf, sizeof(KBDLLHOOKSTRUCT), 0);
 		if (iSendResult == SOCKET_ERROR)
