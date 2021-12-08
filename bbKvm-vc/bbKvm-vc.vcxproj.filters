@@ -60,6 +60,9 @@
     <ClCompile Include="test.cpp">
       <Filter>Source Files\learning</Filter>
     </ClCompile>
+    <ClCompile Include="clientTest.cpp">
+      <Filter>Source Files\learning</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCPSocketController.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="ScreenInfo.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPSocketController.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TCPSocketController.h">
       <Filter>Header Files</Filter>

@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="clientlearn.cpp" />
     <ClCompile Include="ClientSocketController.cpp" />
+    <ClCompile Include="clientTest.cpp" />
     <ClCompile Include="HooksHandler.cpp" />
     <ClCompile Include="kbhooklearn.cpp" />
     <ClCompile Include="main.cpp" />
