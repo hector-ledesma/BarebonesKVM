@@ -5,7 +5,7 @@
 class ClientSocketController :	public TCPSocketController
 {
 public:
-	ClientSocketController(char* port, char* address) : TCPSocketController(port, address) {};
+	ClientSocketController(const char* port, const char* address) : TCPSocketController(port, address) {};
 
 	SOCKET initServerSocket();
 };

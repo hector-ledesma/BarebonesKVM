@@ -23,7 +23,7 @@ ClientSocketController::initServerSocket()
 		*/
 		iResult = connect(connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 		if (iResult == SOCKET_ERROR) {
-			std::cerr << "Failed to connect to addr: " << WSAGetLastError() << std::endl;
+			std::cerr << "[ClientSocketController] ---- Failed to connect to addr: " << WSAGetLastError() << std::endl;
 			/*
 				If we fail, we want to try with the next address on the list so:
 				|-- set iResult to invalid, so we may check once we exit the loop.
@@ -40,7 +40,7 @@ ClientSocketController::initServerSocket()
 	//	If we exit our loop, and our result is invalid and our pointer is null, we didn't find a valid address.
 	if (iResult == INVALID_SOCKET && ptr == nullptr)
 	{
-		std::cerr << "Failed to find server!. Exiting early." << std::endl;
+		std::cerr << "[ClientSocketController] ---- Failed to find server!. Exiting early." << std::endl;
 		throw - 1;
 	}
 
