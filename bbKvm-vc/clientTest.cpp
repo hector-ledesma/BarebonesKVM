@@ -23,7 +23,7 @@
 
 
 void
-main() {
+clientTest_main() {
 	WSADATA wsaData;
 	int wsOk = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (wsOk != 0)

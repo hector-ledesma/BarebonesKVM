@@ -22,6 +22,9 @@
     <Filter Include="Source Files\server">
       <UniqueIdentifier>{13780868-0b43-48f4-8463-90d6b422dce4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\client">
+      <UniqueIdentifier>{1ea0ad3d-291a-479f-9630-c17651c6ff37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TCPSocketController.cpp">
@@ -62,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="clientTest.cpp">
       <Filter>Source Files\learning</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Source Files\client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +115,12 @@
     </ClInclude>
     <ClInclude Include="TCPSocketController.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPSocketController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Source Files\client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

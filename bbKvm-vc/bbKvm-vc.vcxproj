@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="clientlearn.cpp" />
     <ClCompile Include="ClientSocketController.cpp" />
     <ClCompile Include="clientTest.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Client.h" />
     <ClInclude Include="ClientSocketController.h" />
     <ClInclude Include="HooksHandler.h" />
     <ClInclude Include="ScreenInfo.h" />
