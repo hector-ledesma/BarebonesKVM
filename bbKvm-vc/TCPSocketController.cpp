@@ -61,10 +61,11 @@ TCPSocketController::generateSocket(bool isServer) {
 	hints.ai_family = AF_INET;			//	IPv4
 	hints.ai_socktype = SOCK_STREAM;	//	Stream Socket
 	hints.ai_protocol = IPPROTO_TCP;	//	TCP Protocol
+	int wsOk;
 	if (isServer)
 		hints.ai_flags = AI_PASSIVE;	//	Caller will use returned socket in bind() call. Server listening socket.
 
-	int wsOk = getaddrinfo(NULL, m_port, &hints, &m_result);
+	wsOk = getaddrinfo(m_address, m_port, &hints, &m_result);
 	if (wsOk != 0)
 	{
 		std::cerr << "\n[TCPSocketController] ---- geraddrinfo failed: " << wsOk << std::endl;
@@ -75,7 +76,7 @@ TCPSocketController::generateSocket(bool isServer) {
 		struct sockaddr_in* ipv4 = (struct sockaddr_in*)m_result->ai_addr;
 		char ipstr[INET6_ADDRSTRLEN];
 		inet_ntop(m_result->ai_family, &(ipv4->sin_addr), ipstr, sizeof ipstr);
-		std::cout << "\n[TCPSocketController] ---- LocalHost resolved successfully:\n"
+		std::cout << "\n[TCPSocketController] ---- getaddrinfo() resolved successfully:\n"
 			<< "\t|---- Address: \t" << ipstr << "\n"
 			<< "\t|---- Family: \t" << m_result->ai_family << "\n"
 			<< "\t|---- SckType: \t" << m_result->ai_socktype << "\n"
