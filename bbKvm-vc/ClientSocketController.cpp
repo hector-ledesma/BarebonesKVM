@@ -1,6 +1,7 @@
 #include "ClientSocketController.h"
 
 #include <WinSock2.h>
+#include <WS2tcpip.h>
 #include <iostream>
 
 SOCKET 
@@ -22,6 +23,9 @@ ClientSocketController::initServerSocket()
 			We need to establish some sort of "handshake" between client and server. This way, even if there's another machine with the same port open, we only connect to our program.
 		*/
 		iResult = connect(connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		char ipstr[22];
+		inet_ntop(ptr->ai_family, &(ptr->ai_addr), ipstr, sizeof ipstr);
+		std::cerr << "[ClientSocketController] ---- Attempting to connect to addr: " << ipstr << std::endl;
 		if (iResult == SOCKET_ERROR) {
 			std::cerr << "[ClientSocketController] ---- Failed to connect to addr: " << WSAGetLastError() << std::endl;
 			/*
