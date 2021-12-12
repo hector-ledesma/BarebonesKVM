@@ -71,11 +71,11 @@ Server::getClient()
 void
 Server::run()
 {
-	m_handler.setHooks();
 	
 
 	// If we don't have a client yet, stop until we receive a connection request and successfully initialize our client socket.
 	if (!haveClient()) getClient();
+	m_handler.setHooks();
 
 	std::cout << "\n[Server] ---- Running..." << std::endl;
 

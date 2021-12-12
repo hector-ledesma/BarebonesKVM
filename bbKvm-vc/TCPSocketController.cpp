@@ -56,7 +56,7 @@ TCPSocketController::generateSocket(bool isServer) {
 	std::cout << "\n[TCPSocketController] ---- Generating socket." << std::endl;
 
 	SOCKET workSocket;
-	addrinfo hints, * result;
+	addrinfo hints;
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_INET;			//	IPv4
 	hints.ai_socktype = SOCK_STREAM;	//	Stream Socket

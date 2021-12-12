@@ -122,5 +122,11 @@
     <ClInclude Include="Client.h">
       <Filter>Source Files\client</Filter>
     </ClInclude>
+    <ClInclude Include="TCPSocketController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPSocketController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
