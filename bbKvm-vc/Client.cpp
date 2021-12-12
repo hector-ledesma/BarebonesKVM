@@ -17,8 +17,9 @@
 #define		DATA_DELIMITER		"[["
 
 
-Client::Client()
-	:	m_controller(ClientSocketController(DEFAULT_PORT, DEFAULT_SERVER)),
+Client::Client(const char* ip)
+	:	m_ip(ip),
+		m_controller(ClientSocketController(DEFAULT_PORT, ip)),
 		m_serverSocket(m_controller.initServerSocket())
 {
 	std::cout << "\n[Client] ---- Constructor called." << std::endl;
