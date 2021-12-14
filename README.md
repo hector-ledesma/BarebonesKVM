@@ -15,13 +15,10 @@
 
   
 
-| KEYBIND | Function
-
-|----------------|-------------------------------|
-
-|TAB  |`Switch between controlling host device and remote device.`
-
-|ESC |`Shuts down program.` |
+| KEYBIND | Function |
+|----------------|--------------------------|
+|TAB  | `Switch between controlling host device and remote device.` |
+|ESC | `Shuts down program.` |
 
   
 
