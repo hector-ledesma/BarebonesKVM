@@ -1,6 +1,6 @@
 
 # Instructions
-*The "Full Release" folder contains the exec and all its dependencies.*
+*The "Full Release" folder contains the exe and all its dependencies.*
 1. Locate your host/server's ip address. You'll need it when running the client.
 1.1 `cmd` -> `ipconfig`.
 2. **FIRST** Launch the application ( *run bbKvm-vc.exe* ) on the server device , and use the `server` command.
