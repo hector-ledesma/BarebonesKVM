@@ -2,10 +2,10 @@
 # Instructions
 *The "Full Release" folder contains the exec and all its dependencies.*
 1. Locate your host/server's ip address. You'll need it when running the client.
-1.1 cmd -> ipconfig.
-2. **FIRST** Launch the application ( *run bbKvm-vc.exe* ) on the server device , and use the 'server' command.
+1.1 `cmd` -> `ipconfig`.
+2. **FIRST** Launch the application ( *run bbKvm-vc.exe* ) on the server device , and use the `server` command.
 > ***WARNING*** once the server is waiting for a client, closing the program directly (x'ing out the window) may cause memory leaks. You can simply open a second instance of the program as a client on the same device using 'localhost'. This will allow you to exit out of the program safely.
-3. **THEN** Launch the application on your client device. Type your host device's ip right after the client command.
+3. **THEN** Launch the application on your client device. Type your host device's ip right after the client command as `client 192.168.x.x`
   
 | KEYBIND | Function |
 |----------------|--------------------------|
